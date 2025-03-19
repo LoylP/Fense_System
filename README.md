@@ -1,1 +1,1 @@
-# FakeBuster: Hệ thống tự động phát hiện và xác minh tin giả bằng AI
+# FakeBuster: An Automated System for Detecting and Verifying Fake News in Online Fraud Campaigns Using LLMs
