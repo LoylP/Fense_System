@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
-import dateparser
 
 def get_article_content(url):
     """Lấy nội dung và ngày đăng từ một bài viết trên Dân Trí"""
@@ -42,18 +41,13 @@ def crawl_dantri():
             link = link_tag['href'] if link_tag else None
             if link and not link.startswith('http'):
                 link = 'https://dantri.com.vn' + link
-            
-            # Lấy tóm tắt bài viết (summary)
-            summary_tag = item.find('div', class_='article-excerpt')
-            summary = summary_tag.text.strip() if summary_tag else 'Không có mô tả'
-
+        
             # Lấy nội dung bài viết từ trang chi tiết
             content, article_date = get_article_content(link) if link else ('', None)
 
             articles.append({
                 'title': title,
                 'link': link,
-                'summary': summary,
                 'content': content,
                 'date': article_date,  
             })
@@ -65,7 +59,6 @@ def main():
     for article in articles:
         print(f"Title: {article['title']}")
         print(f"Link: {article['link']}")
-        print(f"Summary: {article['summary']}")
         print(f"Date: {article['date']}")
         print(f"Content: {article['content'][:500]}...\n")  # Giới hạn 500 ký tự để xem trước
 

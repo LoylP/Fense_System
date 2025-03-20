@@ -6,9 +6,8 @@ import dateparser
 def get_article_content(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
-    content = ''
-    for paragraph in soup.find_all('p'):
-        content += paragraph.text.strip() + '\n'
+    paragraphs = [p.text.strip() for p in soup.find_all('p') if p.text.strip()]
+    content = "\n".join(dict.fromkeys(paragraphs))
 
     date_tag = soup.find('span', {'class': 'date'})
     if date_tag:
@@ -35,9 +34,8 @@ def crawl_vnexpress():
             link = title_tag.find('a')['href']
             if not link.startswith('http'):
                 link = 'https://vnexpress.net' + link
-            summary = summary_tag.text.strip()
             content, date = get_article_content(link)
-            articles.append({'title': title, 'link': link, 'summary': summary, 'content': content, 'date': date})
+            articles.append({'title': title, 'link': link, 'content': content, 'date': date})
     
     return articles
 
@@ -46,9 +44,8 @@ def main():
     for article in vnexpress_articles:
         print(f"Title: {article['title']}")
         print(f"Link: {article['link']}")
-        print(f"Summary: {article['summary']}")
         print(f"Date: {article['date']}")
-        print(f"Content: {article['content']}\n")
+        print(f"Content: {article['content']}")
 
 if __name__ == '__main__':
     main()
