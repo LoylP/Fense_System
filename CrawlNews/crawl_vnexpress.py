@@ -20,8 +20,7 @@ def get_article_content(url):
 
     return content.strip(), article_date
 
-def crawl_vnexpress():
-    url = 'https://vnexpress.net/thoi-su'
+def crawl_vnexpress(url='https://vnexpress.net/thoi-su'):
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -39,13 +38,13 @@ def crawl_vnexpress():
     
     return articles
 
-def main():
-    vnexpress_articles = crawl_vnexpress()
-    for article in vnexpress_articles:
-        print(f"Title: {article['title']}")
-        print(f"Link: {article['link']}")
-        print(f"Date: {article['date']}")
-        print(f"Content: {article['content']}")
+# def main():
+#     vnexpress_articles = crawl_vnexpress()
+#     for article in vnexpress_articles:
+#         print(f"Title: {article['title']}")
+#         print(f"Link: {article['link']}")
+#         print(f"Date: {article['date']}")
+#         print(f"Content: {article['content']}")
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

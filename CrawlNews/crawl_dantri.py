@@ -23,9 +23,8 @@ def get_article_content(url):
 
     return content.strip(), article_date
 
-def crawl_dantri():
+def crawl_dantri(url='https://dantri.com.vn/tin-moi-nhat.htm'):
     """Thu thập danh sách bài viết từ chuyên mục mới nhất của Dân Trí"""
-    url = 'https://dantri.com.vn/tin-moi-nhat.htm'
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -54,13 +53,13 @@ def crawl_dantri():
     
     return articles
 
-def main():
-    articles = crawl_dantri()
-    for article in articles:
-        print(f"Title: {article['title']}")
-        print(f"Link: {article['link']}")
-        print(f"Date: {article['date']}")
-        print(f"Content: {article['content'][:500]}...\n")  # Giới hạn 500 ký tự để xem trước
+# def main():
+#     articles = crawl_dantri()
+#     for article in articles:
+#         print(f"Title: {article['title']}")
+#         print(f"Link: {article['link']}")
+#         print(f"Date: {article['date']}")
+#         print(f"Content: {article['content'][:500]}...\n")  # Giới hạn 500 ký tự để xem trước
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

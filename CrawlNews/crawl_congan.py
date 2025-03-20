@@ -30,9 +30,8 @@ def get_article_content(url):
 
     return content.strip(), article_datetime
 
-def crawl_congan():
+def crawl_congan(url='https://congan.com.vn/tin-chinh'):
     """Thu thập danh sách bài viết từ chuyên mục Tin Chính của Báo Công An"""
-    url = 'https://congan.com.vn/tin-chinh'
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -61,13 +60,13 @@ def crawl_congan():
     
     return articles
 
-def main():
-    articles = crawl_congan()
-    for article in articles:
-        print(f"Date: {article['date']}")
-        print(f"Title: {article['title']}")
-        print(f"Link: {article['link']}")
-        print(f"Content: {article['content'][:500]}...\n")  # Giới hạn 500 ký tự để xem trước
+# def main():
+#     articles = crawl_congan()
+#     for article in articles:
+#         print(f"Date: {article['date']}")
+#         print(f"Title: {article['title']}")
+#         print(f"Link: {article['link']}")
+#         print(f"Content: {article['content'][:500]}...\n") 
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

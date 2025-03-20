@@ -24,9 +24,7 @@ def get_article_content_tn(url):
 
     return content.strip(), article_date
 
-def crawl_thanhnien():
-    """Thu thập danh sách bài viết từ chuyên mục Chính trị của Thanh Niên"""
-    url = 'https://thanhnien.vn/chinh-tri.htm'
+def crawl_thanhnien(url='https://thanhnien.vn/chinh-tri.htm'):
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -53,13 +51,13 @@ def crawl_thanhnien():
     
     return articles
 
-def main():
-    articles = crawl_thanhnien()
-    for article in articles:
-        print(f"Date: {article['date']}")
-        print(f"Title: {article['title']}")
-        print(f"Link: {article['link']}")
-        print(f"Content: {article['content']}")  # Giới hạn 500 ký tự để xem trước
+# def main():
+#     articles = crawl_thanhnien()
+#     for article in articles:
+#         print(f"Date: {article['date']}")
+#         print(f"Title: {article['title']}")
+#         print(f"Link: {article['link']}")
+#         print(f"Content: {article['content']}")  # Giới hạn 500 ký tự để xem trước
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
