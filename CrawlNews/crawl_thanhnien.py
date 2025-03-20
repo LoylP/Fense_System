@@ -59,7 +59,7 @@ def main():
         print(f"Date: {article['date']}")
         print(f"Title: {article['title']}")
         print(f"Link: {article['link']}")
-        print(f"Content: {article['content'][:500]}...\n")  # Giới hạn 500 ký tự để xem trước
+        print(f"Content: {article['content']}")  # Giới hạn 500 ký tự để xem trước
 
 if __name__ == '__main__':
     main()
