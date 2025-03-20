@@ -23,9 +23,7 @@ def get_article_content(url):
 
     return content.strip(), article_date
 
-def crawl_nhandan():
-    """Thu thập danh sách bài viết từ chuyên mục mới nhất của Nhân Dân"""
-    url = 'https://nhandan.vn/tin-moi.html'
+def crawl_nhandan(url='https://nhandan.vn/tin-moi.html'):
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -54,13 +52,13 @@ def crawl_nhandan():
     
     return articles
 
-def main():
-    articles = crawl_nhandan()
-    for article in articles:
-        print(f"Date: {article['date']}")
-        print(f"Title: {article['title']}")
-        print(f"Link: {article['link']}")
-        print(f"Content: {article['content']}...\n")  # Giới hạn 500 ký tự để xem trước
+# def main():
+#     articles = crawl_nhandan()
+#     for article in articles:
+#         print(f"Date: {article['date']}")
+#         print(f"Title: {article['title']}")
+#         print(f"Link: {article['link']}")
+#         print(f"Content: {article['content']}...\n")  # Giới hạn 500 ký tự để xem trước
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
