@@ -2,3 +2,12 @@ requests
 beautifulsoup4
 sqlalchemy
 dateparser
+pandas
+sqlalchemy
+faiss-cpu 
+sentence-transformers
+rank_bm25
+nltk
+fastapi
+scikit-learn
+uvicorn
