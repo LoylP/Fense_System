@@ -1,0 +1,77 @@
+﻿Type,Description
+Lừa đảo 'combo du lịch giá rẻ',"Quảng cáo tour du lịch, phòng khách sạn giá rẻ, yêu cầu đặt cọc trước rồi chiếm đoạt tiền.
+Dịch vụ visa giả, hứa hoàn tiền 100%, nhưng sau khi nhận tiền lại lấy lý do hồ sơ sai để từ chối hoàn trả.
+Giả mạo website, fanpage công ty du lịch, yêu cầu chuyển khoản trước rồi cắt liên lạc.
+Chiếm đoạt tài khoản MXH, giả danh người quen đi du lịch nước ngoài để mượn tiền.
+Giả mạo đại lý vé máy bay, lập website giả, bán vé với giá rẻ bất thường để lừa đảo."
+Lừa đảo cuộc gọi video Deepfake,"Sử dụng AI để tạo video giả mạo người thân, bạn bè để lừa đảo tài chính."
+Lừa đảo 'khóa SIM' vì chưa chuẩn hóa thuê bao,"Giả danh nhân viên nhà mạng/cơ quan Nhà nước, gọi điện thông báo thuê bao sắp bị khóa do ""chưa nộp phạt"" hoặc ""sai thông tin"".
+Yêu cầu cung cấp thông tin cá nhân, hướng dẫn thực hiện cú pháp sang tên SIM hoặc chuyển hướng cuộc gọi.
+Chiếm quyền nhận cuộc gọi OTP, từ đó đăng nhập ví điện tử, mạng xã hội của nạn nhân và chiếm đoạt tài khoản, tiền trong ví/ngân hàng liên kết."
+Giả mạo biên lai chuyển tiền thành công,"Mua hàng số lượng lớn, sau đó vay thêm tiền mặt từ người bán.
+Giả vờ chuyển khoản qua Internet Banking, nhưng thực chất dùng phần mềm tạo biên lai giả để đánh lừa nạn nhân.
+Nạn nhân không nhận được tiền, nhưng kẻ lừa đảo đã bỏ trốn."
+Giả danh giáo viên/nhân viên y tế báo người thân đang cấp cứu,"Mạo danh giáo viên/nhân viên y tế, gọi điện báo con em/người thân đang cấp cứu nguy kịch.
+Thúc giục chuyển tiền gấp, dọa nếu không nộp ngay sẽ ảnh hưởng đến tính mạng.
+Đánh vào tâm lý hoảng loạn, dùng ngôn từ gây lo sợ như ""nguy kịch"", ""bị thương nặng"", ""có thể không qua khỏi"".
+Cung cấp thông tin trường lớp chính xác, tạo lòng tin để phụ huynh chuyển tiền.
+Dấu hiệu đáng ngờ: Xưng hô lạ, không thể cung cấp thông tin cá nhân rõ ràng, thường gọi vào giờ nghỉ trưa, đêm khuya hoặc tan tầm."
+"Giả danh công ty tài chính, ngân hàng thu thập thông tin","Giả danh ngân hàng/công ty tài chính, quảng cáo cho vay tín chấp lãi suất thấp, không thế chấp, dù nợ xấu vẫn vay được.
+Tạo website, ứng dụng giả, chạy quảng cáo trên mạng xã hội, tham gia các hội nhóm để tiếp cận người cần vay tiền.
+Yêu cầu cung cấp thông tin cá nhân (CMND/CCCD, ảnh chân dung, số tài khoản ngân hàng).
+Dụ nạn nhân chuyển tiền xác minh hồ sơ, duyệt vay, sau đó đưa ra lý do hồ sơ sai để yêu cầu nộp thêm tiền.
+Sau khi nhận tiền, cắt liên lạc, nạn nhân không nhận được khoản vay mà còn bị lộ thông tin cá nhân, có nguy cơ bị lợi dụng cho các hoạt động lừa đảo khác."
+"Cài cắm ứng dụng, link quảng cáo cờ bạc, cá độ, tín dụng đen","Đăng quảng cáo trên website, diễn đàn, tin nhắn SMS, với tiêu đề hấp dẫn như ""Vay siêu tốc, không thế chấp"", ""Lãi suất 0 đồng"".
+Dẫn dụ tải ứng dụng hoặc truy cập link lạ, yêu cầu nhập thông tin cá nhân, số tài khoản ngân hàng, ảnh CMND/CCCD.
+Mạo danh công ty tài chính để tạo lòng tin, nhắm vào người thiếu cảnh giác.
+Yêu cầu cấp quyền truy cập danh bạ, hình ảnh, sau đó thu thập dữ liệu để đe dọa, làm phiền nạn nhân và người thân.
+Chứa điều khoản bất lợi, cho phép đe dọa, khủng bố mạng, bôi nhọ danh dự khi thu hồi nợ."
+"Giả mạo trang thông tin điện tử cơ quan, doanh nghiệp","Tạo trang web giả mạo có giao diện gần giống website chính thức của cơ quan nhà nước, ngân hàng, BHXH... để lừa người dùng.
+Gửi tin nhắn giả mạo thương hiệu (SMS Brandname), yêu cầu người dùng truy cập link lạ để xác minh thông tin.
+Dẫn dụ người dùng nhập thông tin cá nhân, tài khoản ngân hàng, sau đó chiếm đoạt dữ liệu.
+Đường dẫn có định dạng bất thường, ví dụ như ""vn-cbs.xyz"", ""vn-ms.top""... thay vì tên miền chính thức."
+Phát tán tin nhắn giả mạo thương hiệu,"Dùng trạm phát sóng BTS giả để gửi hàng loạt tin nhắn lừa đảo mạo danh ngân hàng, cơ quan nhà nước, ví điện tử...
+Lợi dụng cơ chế tự động kết nối vào sóng mạnh, khiến điện thoại tự động kết nối vào trạm BTS giả đang phát 2G.
+Phát tán tin nhắn trên diện rộng, di chuyển đến nơi đông người, phát hàng chục nghìn tin nhắn mỗi ngày.
+Nhắm vào điểm yếu bảo mật của mạng 2G, khó ngăn chặn triệt để do thiết bị trôi nổi không chính ngạch."
+Lừa đảo Tuyển dụng CTV online,"Giả mạo các sàn TMĐT lớn như Shopee, Tiki, Lazada, hứa hẹn ""việc nhẹ lương cao"" để lừa đảo.
+Yêu cầu tạm ứng tiền, viện cớ để nhận công việc nhưng thực chất để chiếm đoạt.
+Yêu cầu cung cấp thông tin tài khoản ngân hàng, thẻ tín dụng, dễ bị đánh cắp thông tin tài chính.
+Trang thanh toán đơn hàng giả mạo, không có bảo mật SSL hoặc ""https://"".
+Công việc quá hấp dẫn, không yêu cầu kỹ năng nhưng lương cao, dễ đánh vào tâm lý nhẹ dạ.
+Không có thông tin công ty hoặc thông tin liên hệ không rõ ràng.
+Thiếu hợp đồng rõ ràng, không có điều khoản minh bạch khi tuyển dụng.
+Có nhiều đánh giá và phản hồi tiêu cực, dễ nhận diện qua các cảnh báo trên mạng."
+"Đánh cắp tài khoản MXH, nhắn tin lừa đảo","Nhận tin nhắn/email đáng ngờ từ bạn bè, yêu cầu cung cấp thông tin cá nhân, chuyển tiền hoặc hành động khẩn cấp.
+Cách viết, ngôn ngữ tin nhắn thay đổi đột ngột, không giống phong cách bình thường của người gửi.
+Chứa đường link lạ, URL không phổ biến, thiếu ""https://"", hoặc dẫn đến trang web đáng ngờ.
+Yêu cầu thông tin đăng nhập MXH, tài khoản ngân hàng, lừa người dùng cung cấp để chiếm đoạt tài khoản.
+Xác minh thông tin: Nếu nhận tin nhắn đáng ngờ, liên hệ trực tiếp với người gửi bằng phương thức khác (gọi điện, nhắn tin riêng).
+Báo cáo tài khoản bị đánh cắp cho nền tảng MXH/email, cảnh báo bạn bè không tin vào tin nhắn lừa đảo.
+Thay đổi mật khẩu ngay lập tức, sử dụng mật khẩu mạnh, bật xác thực hai bước để bảo vệ tài khoản."
+"Rao bán hàng giả, hàng nhái qua sàn thương mại điện tử","Giá rẻ bất thường, thấp hơn nhiều so với giá thị trường, dễ là hàng giả/hàng nhái.
+Thiếu thông tin sản phẩm, không có mô tả chi tiết về thông số kỹ thuật, nguồn gốc, bảo hành.
+Tạo áp lực mua hàng nhanh, dùng lý do ""số lượng có hạn"", ""giảm giá sốc"" để thúc giục người mua.
+Đánh giá không tự nhiên, nhiều nhận xét tích cực giả mạo, không đáng tin cậy.
+Phương thức thanh toán không an toàn, yêu cầu chuyển khoản trực tiếp, ví điện tử không rõ nguồn gốc, hoặc cung cấp thông tin thẻ tín dụng đáng ngờ.
+Tài khoản người bán không uy tín, mới lập, ít thông tin cá nhân, không có đánh giá thực tế.
+Không cung cấp thông tin liên hệ, thiếu số điện thoại, địa chỉ hoặc email rõ ràng.
+Lịch sử phản hồi tiêu cực, nhiều khiếu nại từ khách hàng trước đó hoặc không có đánh giá đáng tin cậy."
+Đánh cắp thông tin CCCD đi vay tín dụng,"Tiết lộ thông tin CCCD trên mạng xã hội, dễ bị kẻ gian sử dụng để đăng ký mã số thuế ảo, vay tiền trái phép.
+Mạo danh tổ chức tín dụng trên mạng xã hội, cung cấp dịch vụ vay nhanh nhưng lãi suất cao, điều khoản không rõ ràng.
+Lừa đảo chiếm đoạt tài sản, giả vờ làm quen, tạo lòng tin rồi dụ dỗ nạn nhân cung cấp thông tin cá nhân hoặc chuyển tiền.
+Dùng thông tin CCCD để mở tài khoản ngân hàng, vay nợ xấu, khiến nạn nhân bị dính nợ mà không hay biết.
+Nhận tin nhắn/cuộc gọi lạ yêu cầu xác minh thông tin cá nhân, có thể là dấu hiệu đánh cắp dữ liệu."
+Chuyển nhầm tiền vào tài khoản ngân hàng,"Chuyển tiền nhầm vào tài khoản, sau đó giả danh người thu hồi nợ yêu cầu nạn nhân hoàn lại số tiền.
+Yêu cầu trả lại tiền ngay lập tức, đánh vào tâm lý sợ rắc rối của nạn nhân để thao túng.
+Thông tin người yêu cầu không rõ ràng, không cung cấp đầy đủ danh tính, thường sử dụng tài khoản ngân hàng cá nhân.
+Dụ nạn nhân xác minh qua số điện thoại hoặc email do kẻ lừa đảo cung cấp, thay vì kênh chính thức của ngân hàng.
+Có thể liên quan đến rửa tiền, nếu nạn nhân chuyển lại số tiền có nguồn gốc bất hợp pháp, có thể bị điều tra.
+Dấu hiệu nghi ngờ khác: Không có giấy tờ giao dịch hợp lệ, sử dụng tin nhắn khẩn cấp gây áp lực, tài khoản gửi tiền có lịch sử bất thường."
+Dịch vụ lấy lại tiền khi đã bị lừa,"Nghiên cứu nạn nhân, nhắm vào những người từng bị lừa đảo trước đó.
+Tạo danh tính giả, giả mạo tổ chức/pháp lý đáng tin cậy, lập hồ sơ hoặc trang web giả để tạo lòng tin.
+Chủ động liên hệ nạn nhân, tự nhận là chuyên gia có thể ""lấy lại tiền bị lừa"" bằng phương pháp đặc biệt.
+Hứa hẹn khả năng khôi phục tiền, dùng ngôn từ chuyên nghiệp, tạo cảm giác có quyền lực hoặc mối quan hệ đặc biệt.
+Yêu cầu thanh toán trước hoặc cung cấp thông tin nhạy cảm, với lý do ""phí xử lý"", ""thủ tục pháp lý"".
+Duy trì liên lạc để kéo dài thời gian, liên tục cập nhật tình hình giả mạo để ngăn nạn nhân nghi ngờ.
+Sau khi nhận tiền, biến mất, nạn nhân không nhận lại được số tiền đã mất."

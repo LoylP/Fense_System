@@ -57,10 +57,12 @@ def generate_unique_id(engine):
 def save_news_table(title, content, date, source):
     engine = create_engine('sqlite:///news_database.db')
 
+    existing_data = pd.read_sql_table('news_table', engine)
+    if title in existing_data["title"].values:
+        return  # Nếu tồn tại, bỏ qua
+    
     # Tạo ID ngẫu nhiên theo định dạng "IDxxxxxxxx"
     new_id = generate_unique_id(engine)
-
-    # Tạo DataFrame mới
     news_df = pd.DataFrame([{
         "id": new_id,
         "title": title,
@@ -68,7 +70,6 @@ def save_news_table(title, content, date, source):
         "date": date,
         "source": source
     }])
-
     # Ghi vào database
     news_df.to_sql('news_table', con=engine, if_exists='append', index=False)
 
@@ -90,4 +91,3 @@ def get_history():
     engine = create_engine('sqlite:///news_database.db')
     return pd.read_sql_table('history_table', engine)
 
-# init_database()
