@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from Database.utils import init_database, get_ds_scamcheck, get_news_table, save_news_table, delete_NewsID, get_history
@@ -8,6 +8,7 @@ from CrawlNews.crawl_congan import crawl_congan
 from CrawlNews.crawl_dantri import crawl_dantri
 from CrawlNews.crawl_thanhnien import crawl_thanhnien
 from CrawlNews.crawl_nhandan import crawl_nhandan
+from Utils.search_googleapi import search_google_api
 import pytz
 from typing import Optional, List
 from datetime import datetime
@@ -95,6 +96,16 @@ async def retrieval_news(query: str):
 
     return {"results": final_results}
 
+@app.get("/search")
+async def search(query: str):
+    try:
+        news_df = search_google_api(query)
+        if news_df.empty:
+            raise HTTPException(status_code=404, detail="No valid search results found.")
+        return news_df.to_dict(orient='records')
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
 @app.get("/get_danhsach_scamcheck")
 async def show_ds():
     scamcheck_df = get_ds_scamcheck()
