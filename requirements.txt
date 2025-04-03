@@ -11,3 +11,6 @@ nltk
 fastapi
 scikit-learn
 uvicorn
+requests 
+beautifulsoup4 
+google-api-python-client
