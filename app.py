@@ -1,6 +1,12 @@
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional, List
+import pytz
+from datetime import datetime
+import numpy as np
+
+# Database và crawl functions
 from Database.utils import init_database, get_ds_scamcheck, get_news_table, save_news_table, delete_NewsID, get_history
 from Database.search_engine import search_bm25, rerank_with_tfidf
 from CrawlNews.crawl_vnexpress import crawl_vnexpress
@@ -9,12 +15,37 @@ from CrawlNews.crawl_dantri import crawl_dantri
 from CrawlNews.crawl_thanhnien import crawl_thanhnien
 from CrawlNews.crawl_nhandan import crawl_nhandan
 from Utils.search_googleapi import search_google_api
-import pytz
-from typing import Optional, List
-from datetime import datetime
-import numpy as np
 
-app = FastAPI()
+# 🏷️ Khai báo metadata cho Swagger
+tags_metadata = [
+    {
+        "name": "Crawl",
+        "description": "API thu thập dữ liệu báo từ các nguồn báo điện tử",
+    },
+    {
+        "name": "Requests",
+        "description": "Các API cho phép người dùng gửi yêu cầu xác thực",
+    },
+    {
+        "name": "Retrieval",
+        "description": "Các API dùng để tìm kiếm tin tức (RAG, BM25, TF-IDF, Google Search)",
+    },
+    {
+        "name": "Database",
+        "description": "Truy xuất dữ liệu trong hệ thống từ bảng lịch sử, tin tức, scamcheck...",
+    },
+    {
+        "name": "News Management",
+        "description": "Thêm hoặc xoá bài báo trong hệ thống",
+    }
+]
+
+app = FastAPI(
+    title="FakeBuster API",
+    description="Hệ thống kiểm chứng và truy xuất tin giả trên nhiều nền tảng.",
+    version="1.0.0",
+    openapi_tags=tags_metadata
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,9 +55,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# print("Initializing database...")
-# init_database()
-
+# ===================== MODELS =====================
 class QueryRequest(BaseModel):
     query: str = ""
 
@@ -39,30 +68,31 @@ class News(BaseModel):
 class SourceNews(BaseModel):
     list_source: List[str]
 
-@app.get("/")
+# ===================== ROUTES =====================
+
+@app.get("/", tags=["Info"])
 async def read_root():
     return {"message": "Welcome to the FakeBuster System!"}
 
-@app.post("/add_news")
+# === News Management ===
+@app.post("/add_news", tags=["News Management"])
 async def add_news(request: News):
-    # Lấy thời gian hiện tại theo múi giờ Việt Nam
     vietnam_tz = pytz.timezone('Asia/Ho_Chi_Minh')
     date = datetime.now(vietnam_tz).strftime('%Y-%m-%d %H:%M:%S')
-
-    # Lưu vào database
-    save_news_table(request.title, request.content, date, request.source)
-
+    save_news_table(request.title, request.content, date, request.link)
     return {"message": "News saved successfully!"}
 
-@app.post("/pipeline_crawl_news")
+@app.delete("/delete_news", tags=["News Management"])
+async def delete_news(id: str):
+    delete_NewsID(id)
+    return {"message": "News deleted successfully!"}
+
+# === Crawl ===
+@app.post("/pipeline_crawl_news", tags=["Crawl"])
 async def pipeline_crawl_news(source_news: SourceNews):
-    """
-    API nhận danh sách nguồn tin từ người dùng, xác định nguồn tự động và tiến hành crawl dữ liệu.
-    """
     list_source = source_news.list_source
     total_saved = 0
 
-    # Lặp qua từng link để xác định nguồn
     for url in list_source:
         if "dantri.com.vn" in url:
             articles = crawl_dantri()
@@ -75,16 +105,37 @@ async def pipeline_crawl_news(source_news: SourceNews):
         elif "thanhnien.vn" in url:
             articles = crawl_thanhnien()
         else:
-            continue  # Bỏ qua nếu không xác định được nguồn
+            continue
 
-        # Lưu dữ liệu vào database
         for article in articles:
             save_news_table(article['title'], article['content'], article['date'], article['link'])
             total_saved += 1
 
     return {"message": f"Đã lưu thành công {total_saved} bài báo vào database!"}
 
-@app.get("/retrieval_news")
+@app.post("/verify_input", tags=["Requests"])
+async def verify_input(
+    input_text: Optional[str] = Form(None),
+    input_image: Optional[UploadFile] = File(None)
+):
+    result = {}
+
+    if input_text:
+        result["input_text"] = input_text
+
+    if input_image:
+        result["input_image"] = input_image.filename  # hoặc .content_type nếu cần
+
+    if not result:
+        return {"message": "Không có nội dung nào được gửi lên."}
+    
+    return {
+        "message": "Đã nhận được input",
+        **result
+    }
+
+# === Retrieval (RAG) ===
+@app.get("/retrieval_news", tags=["Retrieval"])
 async def retrieval_news(query: str):
     bm25_results = search_bm25(query)
     final_results = rerank_with_tfidf(bm25_results, query)
@@ -96,7 +147,7 @@ async def retrieval_news(query: str):
 
     return {"results": final_results}
 
-@app.get("/search")
+@app.get("/search", tags=["Retrieval"])
 async def search(query: str):
     try:
         news_df = search_google_api(query)
@@ -105,27 +156,24 @@ async def search(query: str):
         return news_df.to_dict(orient='records')
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-@app.get("/get_danhsach_scamcheck")
+
+# === Database Access ===
+@app.get("/get_danhsach_scamcheck", tags=["Database"])
 async def show_ds():
     scamcheck_df = get_ds_scamcheck()
     return scamcheck_df.to_dict(orient="records")
 
-@app.get("/get_news")
+@app.get("/get_news", tags=["Database"])
 async def show_news():
     news_df = get_news_table()
     return news_df.to_dict(orient="records")
 
-@app.get("/get_history")
+@app.get("/get_history", tags=["Database"])
 async def show_history():
     history_df = get_history()
     return history_df.to_dict(orient="records")
 
-@app.delete("/delete_news")
-async def delete_news(id: str):
-    delete_NewsID(id)
-    return {"message": "Mail deleted successfully!"}
-
-if __name__== "__main__":
+# ========== MAIN ==========
+if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
