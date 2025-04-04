@@ -25,3 +25,18 @@ TestResults.xml
 /.env
 */__pycache__
 __pycache__/
+
+node_modules/
+
+.next/
+out/
+
+# Log files
+*.log
+
+# OS junk
+.DS_Store
+
+# IDE junk
+.vscode/
+.idea/
