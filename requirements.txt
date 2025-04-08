@@ -14,5 +14,6 @@ uvicorn
 requests 
 beautifulsoup4 
 google-api-python-client
-
 python-multipart
+dotenv
+openai
