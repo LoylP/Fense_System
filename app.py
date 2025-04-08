@@ -4,14 +4,12 @@ from pydantic import BaseModel
 from typing import Optional, List
 import pytz
 from datetime import datetime
-import numpy as np
 import os
 import shutil
-from pathlib import Path
 import json
 # Database và crawl functions
 from Database.utils import init_database, get_ds_scamcheck, get_news_table, save_news_table, delete_NewsID, get_history
-# from Database.search_engine import search_bm25, rerank_with_tfidf
+from Database.search_engine import search_bm25, rerank_with_tfidf
 from CrawlNews.crawl_vnexpress import crawl_vnexpress
 from CrawlNews.crawl_congan import crawl_congan
 from CrawlNews.crawl_dantri import crawl_dantri
@@ -156,17 +154,17 @@ async def verify_input(
     }
 
 # === Retrieval (RAG) ===
-# @app.get("/retrieval_news", tags=["Retrieval"])
-# async def retrieval_news(query: str):
-#     bm25_results = search_bm25(query)
-#     final_results = rerank_with_tfidf(bm25_results, query)
+@app.get("/retrieval_news", tags=["Retrieval"])
+async def retrieval_news(query: str):
+    bm25_results = search_bm25(query)
+    final_results = rerank_with_tfidf(bm25_results, query)
 
-#     for result in final_results:
-#         for key, value in result.items():
-#             if isinstance(value, np.integer):
-#                 result[key] = int(value)
+    for result in final_results:
+        for key, value in result.items():
+            if isinstance(value, np.integer):
+                result[key] = int(value)
 
-#     return {"results": final_results}
+    return {"results": final_results}
 
 @app.get("/search", tags=["Retrieval"])
 async def search(query: str):
