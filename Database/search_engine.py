@@ -3,8 +3,6 @@ import numpy as np
 from sqlalchemy import create_engine
 from rank_bm25 import BM25Okapi
 import re
-import nltk
-from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -14,6 +12,10 @@ engine = create_engine('sqlite:///news_database.db')
 def clean_text(text):
     """Chuẩn hóa văn bản"""
     return re.sub(r"[^\w\s]", "", text).strip().lower() if isinstance(text, str) else ""
+
+def simple_tokenize(text):
+    """Tokenize đơn giản bằng regex, thay thế word_tokenize của nltk"""
+    return re.findall(r'\b\w+\b', text.lower())
 
 def load_data_from_db():
     """Tải dữ liệu từ database"""
@@ -28,13 +30,13 @@ df['clean_content'] = df['content'].apply(clean_text)
 df['clean_title'] = df['title'].apply(clean_text)
 
 # Tạo tập dữ liệu BM25
-tokenized_corpus = [word_tokenize(doc) for doc in df['clean_content'] + " " + df['clean_title']]
+tokenized_corpus = [simple_tokenize(doc) for doc in df['clean_content'] + " " + df['clean_title']]
 bm25 = BM25Okapi(tokenized_corpus)
 
 def search_bm25(query, top_k=10):
     """Tìm kiếm BM25 dựa trên content và title"""
     query = clean_text(query)
-    tokenized_query = word_tokenize(query)
+    tokenized_query = simple_tokenize(query)
 
     scores = bm25.get_scores(tokenized_query)
     top_indices = np.argsort(scores)[::-1][:top_k]  # Lấy top_k chỉ mục có điểm cao nhất
