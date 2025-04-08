@@ -5,16 +5,20 @@ from typing import Optional, List
 import pytz
 from datetime import datetime
 import numpy as np
-
+import os
+import shutil
+from pathlib import Path
+import json
 # Database và crawl functions
 from Database.utils import init_database, get_ds_scamcheck, get_news_table, save_news_table, delete_NewsID, get_history
-from Database.search_engine import search_bm25, rerank_with_tfidf
+# from Database.search_engine import search_bm25, rerank_with_tfidf
 from CrawlNews.crawl_vnexpress import crawl_vnexpress
 from CrawlNews.crawl_congan import crawl_congan
 from CrawlNews.crawl_dantri import crawl_dantri
 from CrawlNews.crawl_thanhnien import crawl_thanhnien
 from CrawlNews.crawl_nhandan import crawl_nhandan
 from Utils.search_googleapi import search_google_api
+from Utils.LLMs import describe_request
 
 # 🏷️ Khai báo metadata cho Swagger
 tags_metadata = [
@@ -54,6 +58,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+TEMP_DIR = "temp_uploads"
+os.makedirs(TEMP_DIR, exist_ok=True)
 
 # ===================== MODELS =====================
 class QueryRequest(BaseModel):
@@ -118,13 +125,27 @@ async def verify_input(
     input_text: Optional[str] = Form(None),
     input_image: Optional[UploadFile] = File(None)
 ):
-    result = {}
+    image_path = None
 
+    # Lưu ảnh upload vào thư mục tạm
+    if input_image:
+        temp_file_path = os.path.join(TEMP_DIR, input_image.filename)
+        with open(temp_file_path, "wb") as buffer:
+            shutil.copyfileobj(input_image.file, buffer)
+        image_path = temp_file_path
+
+    # Gọi hàm xử lý
+    result = describe_request(
+        text_input=input_text,
+        image_path=image_path
+    )
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+
+    # Gắn thêm tên ảnh/text vào kết quả trả về
     if input_text:
         result["input_text"] = input_text
-
     if input_image:
-        result["input_image"] = input_image.filename  # hoặc .content_type nếu cần
+        result["input_image"] = input_image.filename
 
     if not result:
         return {"message": "Không có nội dung nào được gửi lên."}
@@ -135,17 +156,17 @@ async def verify_input(
     }
 
 # === Retrieval (RAG) ===
-@app.get("/retrieval_news", tags=["Retrieval"])
-async def retrieval_news(query: str):
-    bm25_results = search_bm25(query)
-    final_results = rerank_with_tfidf(bm25_results, query)
+# @app.get("/retrieval_news", tags=["Retrieval"])
+# async def retrieval_news(query: str):
+#     bm25_results = search_bm25(query)
+#     final_results = rerank_with_tfidf(bm25_results, query)
 
-    for result in final_results:
-        for key, value in result.items():
-            if isinstance(value, np.integer):
-                result[key] = int(value)
+#     for result in final_results:
+#         for key, value in result.items():
+#             if isinstance(value, np.integer):
+#                 result[key] = int(value)
 
-    return {"results": final_results}
+#     return {"results": final_results}
 
 @app.get("/search", tags=["Retrieval"])
 async def search(query: str):
