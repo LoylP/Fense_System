@@ -49,10 +49,12 @@ def describe_request(text_input='Xác thực thông tin sau:', image_path=None):
                 "role": "system",
                 "content": (
                     "Bạn là một trợ lý AI (Phản hồi đúng ngôn ngữ người dùng hỏi) chuyên xác minh thông tin. "
-                    "Hãy mô tả ảnh (nếu có), tóm tắt và làm rõ yêu cầu của người dùng, trích xuất từ khóa quan trọng"
+                    "Hãy mô tả ảnh (nếu có), tóm tắt và làm rõ yêu cầu của người dùng, trích xuất từ khóa quan trọng "
                     "(liên quan đến địa điểm, tổ chức, nội dung gây tranh cãi). "
-                    "Trả kết quả ở định dạng JSON như: "
-                    "{'summary': ..., 'keywords': [...], 'request_user': ...}"
+                    "Ngoài ra, nếu có xuất hiện trong nội dung, hãy trích xuất thêm các trường: "
+                    "`emails`, `phones`, `urls`.\n\n"
+                    "Trả kết quả ở định dạng JSON như:\n"
+                    "{'summary': ..., 'keywords': [...], 'request_user': ..., 'emails': [...], 'phones': [...], 'urls': [...]}."
                 )
             }
 
@@ -68,9 +70,12 @@ def describe_request(text_input='Xác thực thông tin sau:', image_path=None):
                     {
                         "role": "system",
                         "content": (
-                            "Bạn là trợ lý AI (Phản hồi đúng ngôn ngữ người dùng hỏi). Tóm tắt và làm rõ yêu cầu của người dùng, trích xuất từ khóa quan trọng (keyword), "
-                            "xác định loại yêu cầu, và trả về định dạng JSON như:\n\n"
-                            "{'summary': ..., 'keywords': [...], 'request_user': ...}"
+                            "Bạn là trợ lý AI (Phản hồi đúng ngôn ngữ người dùng hỏi). "
+                            "Hãy tóm tắt và làm rõ yêu cầu của người dùng, trích xuất từ khóa quan trọng (keywords), "
+                            "và nếu có xuất hiện trong nội dung, hãy trích xuất thêm: "
+                            "`emails`, `phones`, `urls`.\n\n"
+                            "Trả về định dạng JSON như:\n"
+                            "{'summary': ..., 'keywords': [...], 'request_user': ..., 'emails': [...], 'phones': [...], 'urls': [...]}."
                         )
                     },
                     {
@@ -92,8 +97,11 @@ def describe_request(text_input='Xác thực thông tin sau:', image_path=None):
             if isinstance(data, dict) and data.get("summary"):
                 return {
                     "summary": data.get("summary"),
-                    "request": data.get("raw_content") or text_input,
-                    "keyword": data.get("keywords", [])
+                    "request": data.get("request_user") or text_input,
+                    "keyword": data.get("keywords", []),
+                    "phones": data.get("phones", []),
+                    "emails": data.get("emails", []),
+                    "urls": data.get("urls", [])
                 }
         except Exception as e:
             continue  # thử lại lần sau
@@ -108,7 +116,7 @@ def describe_request(text_input='Xác thực thông tin sau:', image_path=None):
 
 # if __name__ == "__main__":
 #     result = describe_request(
-#         text_input="Bản đồ này có đúng không",
-#         image_path="/home/phuc/project/FakeBuster_System/public/duongluoibo.png"
+#         text_input="Một số điện thoại +85598765432 gọi đến tôi liên tục và dọa nạt, tôi lo là có hành vi lừa đảo."
+#         # image_path="/home/phuc/project/FakeBuster_System/public/duongluoibo.png"
 #     )
 #     print(json.dumps(result, indent=2, ensure_ascii=False))
