@@ -15,8 +15,8 @@ from CrawlNews.crawl_congan import crawl_congan
 from CrawlNews.crawl_dantri import crawl_dantri
 from CrawlNews.crawl_thanhnien import crawl_thanhnien
 from CrawlNews.crawl_nhandan import crawl_nhandan
-from Utils.search_googleapi import search_google_api
-from Utils.LLMs import describe_request
+from Utils.tools.search_googleapi import search_google_api
+from Utils.tools.LLMs import describe_request
 
 # 🏷️ Khai báo metadata cho Swagger
 tags_metadata = [
