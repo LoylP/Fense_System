@@ -118,7 +118,7 @@ export default function VerifyInputForm() {
       <div className="min-h-screen flex justify-center items-center px-4">
         <div className="w-full max-w-4xl bg-black/70 backdrop-blur-md rounded-2xl p-12 border border-purple-500/20 shadow-2xl relative z-10 animate-fadeInUp">
           <h1 className="text-4xl text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-300 to-blue-400 mb-8 animate-glow">
-            FakeBuster - Hệ thống xác thực thông tin
+            FENSE - Hệ thống xác thực thông tin
           </h1>
           <p className="text-center text-blue-200 mb-2 text-lg">
             Nhập văn bản hoặc hình ảnh cần kiểm chứng vào bên dưới để hệ thống xử lý.
