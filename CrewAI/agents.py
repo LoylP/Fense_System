@@ -28,6 +28,19 @@ class Agents:
             llm=self.llm,
             verbose=True
         )
+        self.db_researcher = Agent(
+            role="Database Researcher",
+            goal="Phân tích kết quả tìm kiếm từ database và chọn lọc thông tin thực sự liên quan đến yêu cầu người dùng.",
+            backstory=(
+                "Bạn có quyền truy cập vào cơ sở dữ liệu tin tức nội bộ. "
+                "Kết quả tìm kiếm có thể chứa các bài viết không liên quan hoặc không hữu ích. "
+                "Nhiệm vụ của bạn là đọc kỹ từng đoạn, chọn lọc thông tin nào thực sự có giá trị trong việc xác minh nội dung người dùng cung cấp. "
+                "Bỏ qua các bài viết không liên quan hoặc không giúp ích trong đánh giá tính xác thực."
+            ),
+            tools=[],
+            llm=self.llm,
+            verbose=True
+        )
         self.verifier = Agent(
             role="Final Verifier",
             goal="Đưa ra kết luận cuối cùng về tính xác thực",
@@ -39,7 +52,13 @@ class Agents:
 
     def build_crew(self, task):
         return Crew(
-            agents=[self.input_parser, self.checker, self.searcher, self.verifier],
+            agents=[
+                self.input_parser,
+                self.checker,
+                self.searcher,
+                self.db_researcher,
+                self.verifier
+            ],
             tasks=[task],
             verbose=True
         )

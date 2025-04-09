@@ -7,6 +7,8 @@ from datetime import datetime
 import os
 import shutil
 import json
+import numpy as np
+from sqlalchemy import create_engine
 # Database và crawl functions
 from Database.utils import init_database, get_ds_scamcheck, get_news_table, save_news_table, delete_NewsID, get_history
 from Database.search_engine import search_bm25, rerank_with_tfidf
@@ -15,8 +17,8 @@ from CrawlNews.crawl_congan import crawl_congan
 from CrawlNews.crawl_dantri import crawl_dantri
 from CrawlNews.crawl_thanhnien import crawl_thanhnien
 from CrawlNews.crawl_nhandan import crawl_nhandan
-from Utils.tools.search_googleapi import search_google_api
-from Utils.tools.LLMs import describe_request
+from CrewAI.tools.search_googleapi import search_google_api
+from CrewAI.tools.LLMs import describe_request
 
 # 🏷️ Khai báo metadata cho Swagger
 tags_metadata = [
@@ -43,7 +45,7 @@ tags_metadata = [
 ]
 
 app = FastAPI(
-    title="FakeBuster API",
+    title="FENSE API",
     description="Hệ thống kiểm chứng và truy xuất tin giả trên nhiều nền tảng.",
     version="1.0.0",
     openapi_tags=tags_metadata
@@ -59,6 +61,9 @@ app.add_middleware(
 
 TEMP_DIR = "temp_uploads"
 os.makedirs(TEMP_DIR, exist_ok=True)
+
+DB_PATH = '/home/phuc/project/FakeBuster_System/news_database.db'
+engine = create_engine(f"sqlite:///{DB_PATH}")
 
 # ===================== MODELS =====================
 class QueryRequest(BaseModel):
@@ -156,7 +161,7 @@ async def verify_input(
 # === Retrieval (RAG) ===
 @app.get("/retrieval_news", tags=["Retrieval"])
 async def retrieval_news(query: str):
-    bm25_results = search_bm25(query)
+    bm25_results = search_bm25(query, engine)
     final_results = rerank_with_tfidf(bm25_results, query)
 
     for result in final_results:
