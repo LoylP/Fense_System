@@ -21,6 +21,9 @@ from CrawlNews.crawl_congan import crawl_congan
 from CrawlNews.crawl_dantri import crawl_dantri
 from CrawlNews.crawl_thanhnien import crawl_thanhnien
 from CrawlNews.crawl_nhandan import crawl_nhandan
+from CrawlNews.crawl_cafef import crawl_cafef
+from CrawlNews.crawl_antv import crawl_antv
+from CrawlNews.crawl_vtv import crawl_vtv
 from CrewAI.tools.search_googleapi import search_google_api
 # Thêm thư mục CrewAI vào sys.path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'CrewAI'))
@@ -120,6 +123,12 @@ async def pipeline_crawl_news(source_news: SourceNews):
             articles = crawl_nhandan()
         elif "thanhnien.vn" in url:
             articles = crawl_thanhnien()
+        elif "cafef.vn" in url:
+            articles = crawl_cafef()
+        elif "antv.gov.vn" in url:
+            articles = crawl_antv()
+        elif "vtv.vn" in url:
+            articles = crawl_vtv()
         else:
             continue
 
