@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -32,13 +33,16 @@ export default function Dashboard() {
       .filter((url) => url.length > 0);
 
     try {
-      const response = await fetch("http://172.21.203.54:8000/pipeline_crawl_news", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ list_source: urlList }),
-      });
+      const response = await fetch(
+        "http://10.102.196.135:8080/pipeline_crawl_news",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ list_source: urlList }),
+        }
+      );
 
       const data = await response.json();
       setCrawlMessage(data.message || "Đã xử lý xong!");
@@ -60,16 +64,32 @@ export default function Dashboard() {
           <nav>
             <ul className="space-y-2">
               <li>
-                <a href="/" className="block p-2 rounded-lg hover:bg-slate-200">Home</a>
+                <Link href="/">
+                  <span className="block p-2 rounded-lg hover:bg-slate-200">
+                    Home
+                  </span>
+                </Link>
               </li>
               <li>
-                <a href="/dashboard" className="block p-2 bg-slate-300 rounded-lg hover:bg-slate-200">Dashboard</a>
+                <Link href="/dashboard">
+                  <span className="block p-2 bg-slate-300 rounded-lg hover:bg-slate-200">
+                    Dashboard
+                  </span>
+                </Link>
               </li>
               <li>
-                <a href="/news" className="block p-2 rounded-lg hover:bg-slate-200">News</a>
+                <Link href="/news">
+                  <span className="block p-2 rounded-lg hover:bg-slate-200">
+                    News
+                  </span>
+                </Link>
               </li>
               <li>
-                <a href="/history" className="block p-2 rounded-lg hover:bg-slate-200">History</a>
+                <Link href="/history">
+                  <span className="block p-2 rounded-lg hover:bg-slate-200">
+                    History
+                  </span>
+                </Link>
               </li>
             </ul>
           </nav>
@@ -120,9 +140,24 @@ export default function Dashboard() {
           {/* Loading indicator */}
           {loading && (
             <div className="mt-4 flex items-center gap-3 text-blue-700 font-medium">
-              <svg className="animate-spin h-6 w-6 text-blue-700" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l4-4-4-4v4a8 8 0 00-8 8z" />
+              <svg
+                className="animate-spin h-6 w-6 text-blue-700"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4l4-4-4-4v4a8 8 0 00-8 8z"
+                />
               </svg>
               Đang xử lý crawl dữ liệu, vui lòng chờ...
             </div>
