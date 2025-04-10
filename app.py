@@ -9,6 +9,7 @@ import os
 import shutil
 import random
 import json
+import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
 
@@ -206,6 +207,9 @@ async def show_ds():
 @app.get("/get_news", tags=["Database"])
 async def show_news():
     news_df = get_news_table()
+    news_df['date'] = pd.to_datetime(news_df['date'], errors='coerce')
+    news_df = news_df.sort_values(by='date', ascending=False)
+
     return {
         "total": len(news_df),
         "data": news_df.to_dict(orient="records")
@@ -214,6 +218,9 @@ async def show_news():
 @app.get("/get_history", tags=["Database"])
 async def show_history():
     history_df = get_history()
+    history_df['timestamp'] = pd.to_datetime(history_df['timestamp'], errors='coerce')
+    history_df = history_df.sort_values(by='timestamp', ascending=False)
+
     return {
         "total": len(history_df),
         "data": history_df.to_dict(orient="records")
