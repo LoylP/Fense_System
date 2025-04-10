@@ -7,12 +7,13 @@ from datetime import datetime
 import sys
 import os
 import shutil
+import random
 import json
 import numpy as np
 from sqlalchemy import create_engine
 
 # Database và crawl functions
-from Database.utils import init_database, get_ds_scamcheck, get_news_table, save_news_table, delete_NewsID, get_history
+from Database.utils import init_database, get_ds_scamcheck, get_news_table, save_news_table, delete_NewsID, get_history, save_history_table
 from Database.search_engine import search_bm25, rerank_with_tfidf
 from CrawlNews.crawl_vnexpress import crawl_vnexpress
 from CrawlNews.crawl_congan import crawl_congan
@@ -144,6 +145,24 @@ async def verify_input(
     # Gọi Pipeline để xử lý
     verifier = Pipeline(text_input=input_text, image_path=image_path)
     result = verifier.run()
+
+    # Gộp request input
+    request_str = input_text or ""
+    if input_image:
+        request_str += f" [IMAGE: {input_image.filename}]"
+
+    # Tạo ID và thời gian
+    id = random.randint(0, 99999)
+    vietnam_tz = pytz.timezone('Asia/Ho_Chi_Minh')
+    date = datetime.now(vietnam_tz).strftime('%Y-%m-%d %H:%M:%S')
+
+    #Lưu lịch sử
+    save_history_table(
+        id=id,
+        request=request_str,
+        response=result.raw if hasattr(result, "raw") else str(result),
+        date=date
+    )
 
     return {
         "message": "Phân tích và xác minh hoàn tất!",
