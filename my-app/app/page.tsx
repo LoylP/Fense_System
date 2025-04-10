@@ -16,7 +16,6 @@ interface VerifyResponse {
   message: string;
   verification_result: {
     raw: string;
-    [key: string]: any;
   };
 }
 
@@ -51,7 +50,7 @@ export default function VerifyInputForm() {
     if (inputText) formData.append("input_text", inputText);
     if (imageFile) formData.append("input_image", imageFile);
     try {
-      const res = await fetch("http://172.21.203.54:8000/verify_input", {
+      const res = await fetch("http://10.102.196.135:8080/verify_input", {
         method: "POST",
         body: formData,
       });
@@ -91,7 +90,9 @@ export default function VerifyInputForm() {
 
   const handleRemoveImage = () => {
     setImageFile(null);
-    previewUrl && URL.revokeObjectURL(previewUrl);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
     setPreviewUrl(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
@@ -105,7 +106,10 @@ export default function VerifyInputForm() {
   }, [previewUrl]);
 
   return (
-    <div className="min-h-screen bg-cover bg-center relative overflow-hidden" style={{ backgroundImage: "url('/bg_galaxy.gif')" }}>
+    <div
+      className="min-h-screen bg-cover bg-center relative overflow-hidden"
+      style={{ backgroundImage: "url('/bg_galaxy.gif')" }}
+    >
       {stars.map((star) => (
         <div
           key={star.id}
@@ -127,7 +131,8 @@ export default function VerifyInputForm() {
             FENSE - Hệ thống xác thực thông tin
           </h1>
           <p className="text-center text-blue-200 mb-2 text-lg">
-            Nhập văn bản hoặc hình ảnh cần kiểm chứng vào bên dưới để hệ thống xử lý.
+            Nhập văn bản hoặc hình ảnh cần kiểm chứng vào bên dưới để hệ thống
+            xử lý.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -172,7 +177,17 @@ export default function VerifyInputForm() {
                 onClick={handleUploadClick}
                 className="flex items-center gap-2 px-4 py-2 bg-indigo-800/60 hover:bg-indigo-700/80 text-blue-200 rounded-lg border border-purple-500/30 transition-all duration-300 transform hover:scale-105"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                   <polyline points="17 8 12 3 7 8"></polyline>
                   <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -206,15 +221,24 @@ export default function VerifyInputForm() {
             </div>
           </form>
 
-          {error && <p className="mt-4 text-red-400 text-center animate-fadeIn">{error}</p>}
+          {error && (
+            <p className="mt-4 text-red-400 text-center animate-fadeIn">
+              {error}
+            </p>
+          )}
 
           {response?.verification_result?.raw && (
             <div className="mt-6 bg-gray-900/70 p-4 rounded-lg text-blue-200 border border-purple-500/30 animate-fadeIn">
-              <h3 className="text-purple-300 font-semibold mb-2">🤖 Phân tích AI:</h3>
+              <h3 className="text-purple-300 font-semibold mb-2">
+                🤖 Phân tích AI:
+              </h3>
               {response.verification_result.raw
                 .split(/(?=\d\. )/)
                 .map((line, idx) => (
-                  <p key={idx} className="mb-2 whitespace-pre-line leading-relaxed">
+                  <p
+                    key={idx}
+                    className="mb-2 whitespace-pre-line leading-relaxed"
+                  >
                     <span className="text-purple-400 font-semibold">
                       {line.trim().split(":")[0]}:
                     </span>{" "}
@@ -228,29 +252,49 @@ export default function VerifyInputForm() {
 
       <style jsx global>{`
         @keyframes fadeInUp {
-          0% { opacity: 0; transform: translateY(20px); }
-          100% { opacity: 1; transform: translateY(0); }
+          0% {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
         .animate-fadeInUp {
           animation: fadeInUp 0.8s ease-out forwards;
         }
         @keyframes twinkle {
-          0%, 100% { opacity: 0.2; }
-          50% { opacity: 1; }
+          0%,
+          100% {
+            opacity: 0.2;
+          }
+          50% {
+            opacity: 1;
+          }
         }
         .animate-twinkle {
           animation: twinkle 3s ease-in-out infinite;
         }
         @keyframes glow {
-          0%, 100% { text-shadow: 0 0 10px #a855f7; }
-          50% { text-shadow: 0 0 20px #7c3aed; }
+          0%,
+          100% {
+            text-shadow: 0 0 10px #a855f7;
+          }
+          50% {
+            text-shadow: 0 0 20px #7c3aed;
+          }
         }
         .animate-glow {
           animation: glow 2.5s ease-in-out infinite;
         }
         @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
         .animate-fadeIn {
           animation: fadeIn 0.5s ease-in-out forwards;

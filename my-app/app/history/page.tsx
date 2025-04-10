@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface HistoryItem {
   id: string;
@@ -26,7 +27,7 @@ export default function HistoryPage() {
 
   const fetchHistory = async () => {
     try {
-      const response = await fetch("http://172.21.203.54:8000/get_history");
+      const response = await fetch("http://10.102.196.135:8080/get_history");
       const data = await response.json();
       setHistory(data.data || []);
     } catch (error) {
@@ -50,16 +51,32 @@ export default function HistoryPage() {
           <nav>
             <ul className="space-y-2">
               <li>
-                <a href="/" className="block p-2 rounded-lg hover:bg-slate-200">Home</a>
+                <Link href="/">
+                  <span className="block p-2 rounded-lg hover:bg-slate-200">
+                    Home
+                  </span>
+                </Link>
               </li>
               <li>
-                <a href="/dashboard" className="block p-2 rounded-lg hover:bg-slate-200">Dashboard</a>
+                <Link href="/dashboard">
+                  <span className="block p-2 rounded-lg hover:bg-slate-200">
+                    Dashboard
+                  </span>
+                </Link>
               </li>
               <li>
-                <a href="/news" className="block p-2 rounded-lg hover:bg-slate-200">News</a>
+                <Link href="/news">
+                  <span className="block p-2 rounded-lg hover:bg-slate-200">
+                    News
+                  </span>
+                </Link>
               </li>
               <li>
-                <a href="/history" className="block p-2 bg-slate-300 rounded-lg">History</a>
+                <Link href="/history">
+                  <span className="block p-2 bg-slate-300 rounded-lg hover:bg-slate-200">
+                    History
+                  </span>
+                </Link>
               </li>
             </ul>
           </nav>
@@ -91,10 +108,18 @@ export default function HistoryPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">ID</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Request</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Response</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Thời gian</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                    ID
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                    Request
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                    Response
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                    Thời gian
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
