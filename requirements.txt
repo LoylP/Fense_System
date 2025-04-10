@@ -21,3 +21,5 @@ openai
 crewai
 crewai_tools
 python-dotenv 
+tldextract
+python-whois
