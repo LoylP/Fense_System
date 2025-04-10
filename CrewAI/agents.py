@@ -20,6 +20,17 @@ class Agents:
             llm=self.llm,
             verbose=True
         )
+        self.url_info_analyst = Agent(
+            role="Domain Intelligence Analyst",
+            goal="Phân tích domain và IP từ URL để phát hiện rủi ro như domain mới đăng ký hoặc tổ chức sở hữu không rõ ràng.",
+            backstory=(
+                "Bạn có chuyên môn về bảo mật mạng và WHOIS. Bạn sẽ cảnh báo nếu domain mới tạo, có tổ chức không rõ ràng "
+                "hoặc IP không thuộc nhà cung cấp uy tín."
+            ),
+            tools=[], 
+            llm=self.llm, 
+            verbose=True
+        )
         self.searcher = Agent(
             role="Web Researcher",
             goal="Tìm kiếm thông tin từ Google để hỗ trợ xác minh",
@@ -55,6 +66,7 @@ class Agents:
             agents=[
                 self.input_parser,
                 self.checker,
+                self.url_info_analyst,
                 self.searcher,
                 self.db_researcher,
                 self.verifier
