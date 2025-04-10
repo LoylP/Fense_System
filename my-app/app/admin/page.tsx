@@ -10,7 +10,7 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === 'admin' && password === '123456') {
+    if (username === 'admin' && password === 'admin123456@') {
       localStorage.setItem('isAdminLoggedIn', 'true');
       router.push('/dashboard');
     } else {
