@@ -4,11 +4,13 @@ from pydantic import BaseModel
 from typing import Optional, List
 import pytz
 from datetime import datetime
+import sys
 import os
 import shutil
 import json
 import numpy as np
 from sqlalchemy import create_engine
+
 # Database và crawl functions
 from Database.utils import init_database, get_ds_scamcheck, get_news_table, save_news_table, delete_NewsID, get_history
 from Database.search_engine import search_bm25, rerank_with_tfidf
@@ -18,7 +20,9 @@ from CrawlNews.crawl_dantri import crawl_dantri
 from CrawlNews.crawl_thanhnien import crawl_thanhnien
 from CrawlNews.crawl_nhandan import crawl_nhandan
 from CrewAI.tools.search_googleapi import search_google_api
-from CrewAI.tools.LLMs import describe_request
+# Thêm thư mục CrewAI vào sys.path
+sys.path.append(os.path.join(os.path.dirname(__file__), 'CrewAI'))
+from CrewAI.pipeline import Pipeline
 
 # 🏷️ Khai báo metadata cho Swagger
 tags_metadata = [
@@ -59,7 +63,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-TEMP_DIR = "temp_uploads"
+TEMP_DIR = "uploads"
 os.makedirs(TEMP_DIR, exist_ok=True)
 
 DB_PATH = '/home/phuc/project/FakeBuster_System/news_database.db'
@@ -128,34 +132,24 @@ async def verify_input(
     input_text: Optional[str] = Form(None),
     input_image: Optional[UploadFile] = File(None)
 ):
+    if not input_text and not input_image:
+        return {"message": "Bạn cần gửi lên input dạng văn bản hoặc ảnh."}
+
     image_path = None
-
-    # Lưu ảnh upload vào thư mục tạm
     if input_image:
-        temp_file_path = os.path.join(TEMP_DIR, input_image.filename)
-        with open(temp_file_path, "wb") as buffer:
-            shutil.copyfileobj(input_image.file, buffer)
-        image_path = temp_file_path
+        image_path = os.path.join(TEMP_DIR, input_image.filename)
+        with open(image_path, "wb") as f:
+            shutil.copyfileobj(input_image.file, f)
 
-    # Gọi hàm xử lý
-    result = describe_request(
-        text_input=input_text,
-        image_path=image_path
-    )
-    print(json.dumps(result, indent=2, ensure_ascii=False))
+    # Gọi Pipeline để xử lý
+    verifier = Pipeline(text_input=input_text, image_path=image_path)
+    result = verifier.run()
 
-    # Gắn thêm tên ảnh/text vào kết quả trả về
-    if input_text:
-        result["input_text"] = input_text
-    if input_image:
-        result["input_image"] = input_image.filename
-
-    if not result:
-        return {"message": "Không có nội dung nào được gửi lên."}
-    
     return {
-        "message": "Đã nhận được input",
-        **result
+        "message": "Phân tích và xác minh hoàn tất!",
+        "input_text": input_text,
+        "input_image": input_image.filename if input_image else None,
+        "verification_result": result
     }
 
 # === Retrieval (RAG) ===
@@ -185,17 +179,26 @@ async def search(query: str):
 @app.get("/get_danhsach_scamcheck", tags=["Database"])
 async def show_ds():
     scamcheck_df = get_ds_scamcheck()
-    return scamcheck_df.to_dict(orient="records")
+    return {
+        "total": len(scamcheck_df),
+        "data": scamcheck_df.to_dict(orient="records")
+    }
 
 @app.get("/get_news", tags=["Database"])
 async def show_news():
     news_df = get_news_table()
-    return news_df.to_dict(orient="records")
+    return {
+        "total": len(news_df),
+        "data": news_df.to_dict(orient="records")
+    }
 
 @app.get("/get_history", tags=["Database"])
 async def show_history():
     history_df = get_history()
-    return history_df.to_dict(orient="records")
+    return {
+        "total": len(history_df),
+        "data": history_df.to_dict(orient="records")
+    }
 
 # ========== MAIN ==========
 if __name__ == "__main__":
