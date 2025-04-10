@@ -8,16 +8,18 @@ from tools.check import (
 from tools.search_googleapi import search_google_api
 from tools.rag_database import rag_db
 from tools.url_info import get_domain_info
+from typing import Optional
 from crewai import Task
 from agents import Agents
 
 class Pipeline:
-    def __init__(self, text_input: str):
+    def __init__(self, text_input: str, image_path: Optional[str] = None):
         self.text_input = text_input
+        self.image_path = image_path
         self.result = None
 
     def build_context(self):
-        parsed = describe_request(self.text_input)
+        parsed = describe_request(self.text_input, self.image_path)
         self.parsed = parsed
         self.keywords = parsed.get("keyword", [])
         self.query = " ".join(self.keywords)
