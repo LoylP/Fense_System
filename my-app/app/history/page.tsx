@@ -29,6 +29,7 @@ export default function HistoryPage() {
   const fetchHistory = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/get_history`);
+      console.log("API_BASE_URL: ", API_BASE_URL);
       const data = await response.json();
       setHistory(data.data || []);
     } catch (error) {
