@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import API_BASE_URL from "../../lib/api";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -34,7 +35,7 @@ export default function Dashboard() {
 
     try {
       const response = await fetch(
-        "http://10.102.196.135:8080/pipeline_crawl_news",
+        `${API_BASE_URL}/pipeline_crawl_news`,
         {
           method: "POST",
           headers: {

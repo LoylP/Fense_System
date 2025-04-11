@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import API_BASE_URL from "../lib/api";
 
 interface Star {
   id: number;
@@ -50,7 +51,8 @@ export default function VerifyInputForm() {
     if (inputText) formData.append("input_text", inputText);
     if (imageFile) formData.append("input_image", imageFile);
     try {
-      const res = await fetch("http://10.102.196.135:8080/verify_input", {
+      
+      const res = await fetch(`${API_BASE_URL}/verify_input`, {
         method: "POST",
         body: formData,
       });

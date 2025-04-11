@@ -4,8 +4,6 @@ import random
 
 def init_database():
     engine = create_engine('sqlite:///news_database.db')
-    df = pd.read_csv('/home/phuc/Dev/FakeBuster_System/Database/scam_data.csv')
-    df.to_sql('scamcheck_table', con=engine, if_exists='replace', index=False)
 
     news_df = pd.DataFrame(columns=["id", "title", "content", "date", "source"]) 
     news_df.to_sql('news_table', con=engine, if_exists='replace', index=False)
@@ -13,21 +11,6 @@ def init_database():
     history_df = pd.DataFrame(columns=["id", "request", "response", "timestamp"]) 
     history_df.to_sql('history_table', con=engine, if_exists='replace', index=False)
 
-    return df
-
-def get_ds_scamcheck():
-    engine = create_engine('sqlite:///news_database.db')
-    return pd.read_sql_table('scamcheck_table', engine)
-
-def add_data_to_database(path_data):
-    engine = create_engine('sqlite:///news_database.db')
-    df_new = pd.read_csv(path_data)
-
-    # Thêm dữ liệu vào bảng, đảm bảo không trùng lặp
-    existing_data = pd.read_sql_table('scamcheck_table', engine)
-    combined_data = pd.concat([existing_data, df_new]).drop_duplicates()
-
-    combined_data.to_sql('scamcheck_table', con=engine, if_exists='replace', index=False)
 
 def get_news_table():
     engine = create_engine('sqlite:///news_database.db')
