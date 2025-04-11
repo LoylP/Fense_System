@@ -82,7 +82,6 @@ origins = [
     "http://localhost:3000",
     "http://10.102.196.135:8080",
     "http://10.102.196.135:8000",
-    "https://fense-system-git-main-loylps-projects.vercel.app/news",
 ]
 
 app.add_middleware(
