@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import API_BASE_URL from "../../lib/api";
 
 interface NewsItem {
   id: string;
@@ -28,7 +29,7 @@ export default function NewsPage() {
 
   const fetchNews = async () => {
     try {
-      const res = await fetch("http://10.102.196.135:8080/get_news");
+      const res = await fetch(`${API_BASE_URL}/get_news`);
       const data = await res.json();
       setNews(data.data || []);
     } catch (err) {

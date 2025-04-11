@@ -11,10 +11,9 @@ import random
 import json
 import pandas as pd
 import numpy as np
-from sqlalchemy import create_engine
 
 # Database và crawl functions
-from Database.utils import init_database, get_ds_scamcheck, get_news_table, save_news_table, delete_NewsID, get_history, save_history_table
+from Database.utils import init_database, get_news_table, save_news_table, delete_NewsID, get_history, save_history_table
 from Database.search_engine import search_bm25, rerank_with_tfidf
 from CrawlNews.crawl_vnexpress import crawl_vnexpress
 from CrawlNews.crawl_congan import crawl_congan
@@ -28,6 +27,25 @@ from CrewAI.tools.search_googleapi import search_google_api
 # Thêm thư mục CrewAI vào sys.path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'CrewAI'))
 from CrewAI.pipeline import Pipeline
+
+def initialize_database_and_crawl():
+    init_database()
+    sources = {
+        "vnexpress": crawl_vnexpress,
+        "congan": crawl_congan,
+    }
+
+    for name, crawl_func in sources.items():
+        try:
+            articles = crawl_func()
+            for article in articles:
+                if all(k in article for k in ['title', 'content', 'date', 'link']):
+                    save_news_table(article['title'], article['content'], article['date'], article['link'])
+            print(f"[✓] Crawled and saved articles from {name}")
+        except Exception as e:
+            print(f"[X] Error crawling {name}: {e}")
+
+initialize_database_and_crawl()
 
 # 🏷️ Khai báo metadata cho Swagger
 tags_metadata = [
@@ -63,16 +81,13 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 TEMP_DIR = "uploads"
 os.makedirs(TEMP_DIR, exist_ok=True)
-
-DB_PATH = '/home/phuc/project/FakeBuster_System/news_database.db'
-engine = create_engine(f"sqlite:///{DB_PATH}")
 
 # ===================== MODELS =====================
 class QueryRequest(BaseModel):
@@ -184,7 +199,7 @@ async def verify_input(
 # === Retrieval (RAG) ===
 @app.get("/retrieval_news", tags=["Retrieval"])
 async def retrieval_news(query: str):
-    bm25_results = search_bm25(query, engine)
+    bm25_results = search_bm25(query)
     final_results = rerank_with_tfidf(bm25_results, query)
 
     for result in final_results:
@@ -205,13 +220,6 @@ async def search(query: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 # === Database Access ===
-@app.get("/get_danhsach_scamcheck", tags=["Database"])
-async def show_ds():
-    scamcheck_df = get_ds_scamcheck()
-    return {
-        "total": len(scamcheck_df),
-        "data": scamcheck_df.to_dict(orient="records")
-    }
 
 @app.get("/get_news", tags=["Database"])
 async def show_news():
@@ -238,4 +246,4 @@ async def show_history():
 # ========== MAIN ==========
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app:app", host="0.0.0.0", port=8080, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=8080)

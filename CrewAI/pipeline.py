@@ -78,3 +78,5 @@ class Pipeline:
         crew = agents.build_crew(task)
         self.result = crew.kickoff()
         return self.result
+
+

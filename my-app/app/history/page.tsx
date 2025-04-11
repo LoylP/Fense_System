@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import API_BASE_URL from "../../lib/api";
 
 interface HistoryItem {
   id: string;
@@ -27,7 +28,7 @@ export default function HistoryPage() {
 
   const fetchHistory = async () => {
     try {
-      const response = await fetch("http://10.102.196.135:8080/get_history");
+      const response = await fetch(`${API_BASE_URL}/get_history`);
       const data = await response.json();
       setHistory(data.data || []);
     } catch (error) {
