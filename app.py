@@ -78,10 +78,18 @@ app = FastAPI(
     openapi_tags=tags_metadata
 )
 
+origins = [
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "http://10.102.196.135:8080",
+    "http://10.102.196.135:8000",
+    "https://master-minnow-generous.ngrok-free.app/",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=origins,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -106,7 +114,7 @@ class SourceNews(BaseModel):
 
 @app.get("/", tags=["Info"])
 async def read_root():
-    return {"message": "Welcome to the FakeBuster System!"}
+    return {"message": "Welcome to the FakeBuster System(add-origin)!"}
 
 # === News Management ===
 @app.post("/add_news", tags=["News Management"])

@@ -1,27 +1,26 @@
+# 🔧 Dùng base image nhẹ và ổn định
 FROM python:3.11-slim
 
+# 🏗️ Set thư mục làm việc trong container
 WORKDIR /app
 
-# Cài đặt các dependencies hệ thống
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgl1 \
-    libglib2.0-0 \
-    libsm6 \
-    libxrender1 \
-    libxext6 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# 🧪 Copy file requirements trước để tối ưu layer
+COPY requirements.txt ./
 
-# Copy requirements.txt vào container
-COPY requirements.txt /app/requirements.txt
+# 🧪 Cài đặt các dependency
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Cài đặt các dependencies Python
-RUN pip install --no-cache-dir -r /app/requirements.txt
+# 🧠 Copy toàn bộ mã nguồn vào container
+COPY . .
 
-# Copy mã nguồn vào container
-COPY . /app
+# 📁 Tạo thư mục chứa database (mount volume sẽ gắn vào đây)
+RUN mkdir -p /app/data
 
-# Mở cổng cho ứng dụng
+# 🌍 Expose port backend
 EXPOSE 8080
 
-# Lệnh để chạy ứng dụng khi container khởi động
+# ✅ Biến môi trường mặc định (có thể override bằng --env-file khi run)
+ENV DB_PATH=/app/data/news_database.db
+
+# 🚀 Chạy FastAPI bằng uvicorn
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
