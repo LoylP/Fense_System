@@ -1,2 +1,2 @@
-const API_BASE_URL = "http://10.102.196.135:8080";
+const API_BASE_URL = "https://master-minnow-generous.ngrok-free.app";
 export default API_BASE_URL;

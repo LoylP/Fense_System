@@ -80,10 +80,9 @@ app = FastAPI(
 
 origins = [
     "http://localhost:3000",
-    "http://localhost:8000",
     "http://10.102.196.135:8080",
     "http://10.102.196.135:8000",
-    "https://master-minnow-generous.ngrok-free.app/",
+    "https://fense-system-git-main-loylps-projects.vercel.app/news",
 ]
 
 app.add_middleware(
