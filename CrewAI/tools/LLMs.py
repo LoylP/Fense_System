@@ -65,7 +65,7 @@ def describe_request(text_input='Xác thực thông tin sau:', image_path=None):
             )
         else:
             response = client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4o",
                 messages=[
                     {
                         "role": "system",
