@@ -13,7 +13,7 @@ import pandas as pd
 import numpy as np
 
 # Database và crawl functions
-from Database.utils import init_database, get_news_table, save_news_table, delete_NewsID, get_history, save_history_table
+from Database.utils import init_database, get_news_table, save_news_table, delete_NewsID, get_history, save_history_table, get_ttp_table, save_ttp_table, generate_ttp_embeddings, map_ttp_from_text
 from Database.search_engine import search_bm25, rerank_with_tfidf
 from CrawlNews.crawl_vnexpress import crawl_vnexpress
 from CrawlNews.crawl_congan import crawl_congan
@@ -66,8 +66,8 @@ tags_metadata = [
         "description": "Truy xuất dữ liệu trong hệ thống từ bảng lịch sử, tin tức, scamcheck...",
     },
     {
-        "name": "News Management",
-        "description": "Thêm hoặc xoá bài báo trong hệ thống",
+        "name": "Management",
+        "description": "Thêm hoặc xoá thông tin trong hệ thống",
     }
 ]
 
@@ -78,16 +78,10 @@ app = FastAPI(
     openapi_tags=tags_metadata
 )
 
-origins = [
-    "http://localhost:3000",
-    "http://10.102.196.135:8080",
-    "http://10.102.196.135:8000",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -105,6 +99,12 @@ class News(BaseModel):
     link: str = ""
     date: str = ""
 
+class TTPs(BaseModel):
+    pattern: str = ""
+    category: str = ""
+    ttp: str = ""
+    source: str = ""
+
 class SourceNews(BaseModel):
     list_source: List[str]
 
@@ -112,17 +112,60 @@ class SourceNews(BaseModel):
 
 @app.get("/", tags=["Info"])
 async def read_root():
-    return {"message": "Welcome to the FakeBuster System(add-origin)!"}
+    return {"message": "Welcome to the FakeBuster System!"}
 
-# === News Management ===
-@app.post("/add_news", tags=["News Management"])
+# === Management ===
+@app.post("/add_news", tags=["Management"])
 async def add_news(request: News):
     vietnam_tz = pytz.timezone('Asia/Ho_Chi_Minh')
     date = datetime.now(vietnam_tz).strftime('%Y-%m-%d %H:%M:%S')
     save_news_table(request.title, request.content, date, request.link)
     return {"message": "News saved successfully!"}
 
-@app.delete("/delete_news", tags=["News Management"])
+@app.post("/add_ttps", tags=["Management"])
+async def add_ttps(request: TTPs):
+    save_ttp_table(request.pattern, request.category, request.ttp, request.source)
+    return {"message": "TTP saved successfully!"}
+
+@app.post("/add_ttps_form_file", tags=["Management"])
+async def add_ttps_form_file(file: UploadFile = File(...)):
+    filename = file.filename.lower()
+    if not (filename.endswith(".csv") or filename.endswith(".xls") or filename.endswith(".xlsx")):
+        raise HTTPException(status_code=400, detail="File phải là CSV hoặc Excel")
+
+    try:
+        if filename.endswith(".csv"):
+            try:
+                df = pd.read_csv(file.file, encoding='utf-8')
+            except UnicodeDecodeError:
+                file.file.seek(0)  # reset con trỏ file
+                df = pd.read_csv(file.file, encoding='latin1') 
+        else:
+            df = pd.read_excel(file.file)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Lỗi khi đọc file: {e}")
+
+    df.columns = df.columns.str.strip().str.lower()
+
+    for _, row in df.iterrows():
+        save_ttp_table(
+            pattern=str(row['pattern']),
+            category=str(row['category']),
+            ttp=str(row['ttp']),
+            source=str(row['source']),
+        )
+
+    return {"message": f"Import thành công {len(df)} bản ghi"}
+
+@app.post("/generate_ttp_embeddings", tags=["Management"])
+async def api_generate_ttp_embeddings():
+    try:
+        generate_ttp_embeddings()
+        return {"message": "Đã tạo và lưu FAISS index thành công."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi khi tạo FAISS index: {e}")
+
+@app.delete("/delete_news", tags=["Management"])
 async def delete_news(id: str):
     delete_NewsID(id)
     return {"message": "News deleted successfully!"}
@@ -187,6 +230,12 @@ async def verify_input(
     vietnam_tz = pytz.timezone('Asia/Ho_Chi_Minh')
     date = datetime.now(vietnam_tz).strftime('%Y-%m-%d %H:%M:%S')
 
+    ttp_matches = ''
+    if "✅" not in result:
+        ttp_matches = map_ttp_from_text(input_text)
+
+    print('tìm thấy ttp_matches')
+
     #Lưu lịch sử
     save_history_table(
         id=id,
@@ -194,12 +243,13 @@ async def verify_input(
         response=result.raw if hasattr(result, "raw") else str(result),
         date=date
     )
-
+    
     return {
         "message": "Phân tích và xác minh hoàn tất!",
         "input_text": input_text,
         "input_image": input_image.filename if input_image else None,
-        "verification_result": result
+        "verification_result": result,
+        "ttp_matches": ttp_matches
     }
 
 # === Retrieval (RAG) ===
@@ -236,6 +286,14 @@ async def show_news():
     return {
         "total": len(news_df),
         "data": news_df.to_dict(orient="records")
+    }
+
+@app.get("/get_ttps", tags=["Database"])
+async def get_ttps():
+    ttp_df = get_ttp_table()
+    return {
+        "total": len(ttp_df),
+        "data": ttp_df.to_dict(orient="records")
     }
 
 @app.get("/get_history", tags=["Database"])
