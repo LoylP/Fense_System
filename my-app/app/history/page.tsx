@@ -29,7 +29,6 @@ export default function HistoryPage() {
   const fetchHistory = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/get_history`);
-      console.log("API_BASE_URL: ", API_BASE_URL);
       const data = await response.json();
       setHistory(data.data || []);
     } catch (error) {
@@ -135,8 +134,10 @@ export default function HistoryPage() {
                   history.map((item, index) => (
                     <tr key={index} className="text-sm text-gray-700">
                       <td className="px-4 py-4">{item.id}</td>
-                      <td className="px-4 py-4 max-w-xs break-words whitespace-pre-line">
-                        {item.request}
+                      <td className="px-4 py-4 max-w-2xl">
+                        <div className="max-h-40 overflow-y-auto whitespace-pre-line border p-2 rounded bg-gray-50">
+                          {item.request}
+                        </div>
                       </td>
                       <td className="px-4 py-4 max-w-2xl">
                         <div className="max-h-40 overflow-y-auto whitespace-pre-line border p-2 rounded bg-gray-50">
