@@ -3,7 +3,7 @@ from langchain_openai import ChatOpenAI
 
 class Agents:
     def __init__(self):
-        self.llm = ChatOpenAI(model_name="gpt-4o", temperature=0.2)
+        self.llm = ChatOpenAI(model_name="gpt-4o", temperature=0)
         self.input_parser = Agent(
             role="Input Analyzer",
             goal="Tóm tắt nội dung và trích xuất thông tin",
