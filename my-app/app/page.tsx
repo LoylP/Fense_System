@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useRef, useEffect } from "react";
 import API_BASE_URL from "../lib/api";
 
@@ -11,6 +12,12 @@ interface Star {
   delay: string;
 }
 
+interface TtpMatch {
+  category: string;
+  ttp: string;
+  source: string;
+}
+
 interface VerifyResponse {
   input_text: string;
   input_image: string | null;
@@ -18,6 +25,7 @@ interface VerifyResponse {
   verification_result: {
     raw: string;
   };
+  ttp_matches?: TtpMatch[];
 }
 
 export default function VerifyInputForm() {
@@ -51,7 +59,6 @@ export default function VerifyInputForm() {
     if (inputText) formData.append("input_text", inputText);
     if (imageFile) formData.append("input_image", imageFile);
     try {
-      
       const res = await fetch(`${API_BASE_URL}/verify_input`, {
         method: "POST",
         body: formData,
@@ -59,7 +66,9 @@ export default function VerifyInputForm() {
       const data: VerifyResponse = await res.json();
       setResponse(data);
     } catch {
-      setError("Đã có lỗi xảy ra khi gửi yêu cầu");
+      setError(
+        "\u0110\u00e3 c\u00f3 l\u1ed7i x\u1ea3y ra khi g\u1eedi y\u00eau c\u1ea7u"
+      );
     } finally {
       setLoading(false);
     }
@@ -108,10 +117,15 @@ export default function VerifyInputForm() {
   }, [previewUrl]);
 
   return (
-    <div
-      className="min-h-screen bg-cover bg-center relative overflow-hidden"
-      style={{ backgroundImage: "url('/bg_galaxy.gif')" }}
-    >
+    <div className="min-h-screen bg-gradient-to-tr from-gray-900 via-blue-900 to-black relative overflow-hidden">
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute top-0 left-0 w-full h-full object-cover brightness-75 contrast-110"
+        src="/bg2.mov"
+      />
       {stars.map((star) => (
         <div
           key={star.id}
@@ -124,15 +138,15 @@ export default function VerifyInputForm() {
             opacity: star.opacity,
             animationDelay: star.delay,
           }}
-        ></div>
+        />
       ))}
 
-      <div className="min-h-screen flex justify-center items-center px-4">
-        <div className="w-full max-w-4xl bg-black/70 backdrop-blur-md rounded-2xl p-12 border border-purple-500/20 shadow-2xl relative z-10 animate-fadeInUp">
-          <h1 className="text-4xl text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-300 to-blue-400 mb-8 animate-glow">
+      <div className="min-h-screen flex justify-center items-start gap-8 px-4 relative z-10 py-12 flex-wrap md:flex-nowrap">
+        <div className="flex-1 max-w-2xl bg-black/80 backdrop-blur-md rounded-2xl p-8 border border-blue-600/60 shadow-md relative z-20">
+          <h1 className="text-3xl text-center font-bold text-white mb-6 tracking-wide">
             FENSE - Hệ thống xác thực thông tin
           </h1>
-          <p className="text-center text-blue-200 mb-2 text-lg">
+          <p className="text-center text-blue-400 mb-4 text-base">
             Nhập văn bản hoặc hình ảnh cần kiểm chứng vào bên dưới để hệ thống
             xử lý.
           </p>
@@ -140,33 +154,31 @@ export default function VerifyInputForm() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <textarea
               onPaste={handlePaste}
-              className="w-full border border-purple-500/30 rounded-lg p-4 bg-gray-900 text-white placeholder-purple-300/40 shadow-inner focus:outline-none focus:ring-2 focus:ring-purple-500/60 resize-none transition duration-300"
-              rows={response ? 2 : 6}
+              className="w-full border border-blue-600 rounded-lg p-3 bg-gray-900 text-white placeholder-blue-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y transition duration-300 max-h-48"
+              rows={response ? 3 : 5}
               placeholder="Nhập hoặc dán nội dung cần xác thực..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
             />
 
-            {/* Preview ảnh gọn */}
             {previewUrl && (
               <div className="relative inline-block mt-2 animate-fadeIn">
                 <img
                   src={previewUrl}
                   alt="preview"
-                  className="w-16 h-16 object-cover rounded-lg border border-purple-400/40 shadow-md"
+                  className="w-14 h-14 object-cover rounded-lg border border-blue-600 shadow-md"
                 />
                 <button
                   type="button"
                   onClick={handleRemoveImage}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center shadow"
+                  className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center shadow-lg hover:bg-red-700 transition"
                 >
                   ✕
                 </button>
               </div>
             )}
 
-            {/* Import + Submit buttons */}
-            <div className="flex items-center justify-between mt-6">
+            <div className="flex justify-between items-center mt-6 gap-3 flex-wrap">
               <input
                 type="file"
                 ref={fileInputRef}
@@ -177,41 +189,27 @@ export default function VerifyInputForm() {
               <button
                 type="button"
                 onClick={handleUploadClick}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-800/60 hover:bg-indigo-700/80 text-blue-200 rounded-lg border border-purple-500/30 transition-all duration-300 transform hover:scale-105"
+                className="flex items-center gap-2 px-3 py-2 bg-blue-800/70 hover:bg-blue-700 text-blue-200 rounded-lg border border-blue-600 transition-all duration-300 transform hover:scale-105 shadow-md"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="17 8 12 3 7 8"></polyline>
-                  <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
+                📁
               </button>
 
-              <div className="flex-1 text-center">
+              <div className="flex justify-center w-full mt-3 md:mt-0">
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`inline-flex items-center justify-center px-8 py-2 text-white font-semibold rounded-2xl shadow-xl bg-gradient-to-r from-purple-900 to-black hover:from-black hover:to-indigo-800 transition-transform transform hover:-translate-y-1 duration-300 ${
+                  className={`inline-flex items-center justify-center px-6 py-2 text-white font-semibold rounded-2xl shadow-md bg-gradient-to-r from-blue-900 to-indigo-900 hover:from-indigo-900 hover:to-blue-900 transition-transform transform hover:-translate-y-1 duration-300 ${
                     loading ? "opacity-60 cursor-wait" : ""
                   }`}
                 >
                   {loading ? (
-                    <span className="flex items-center gap-4">
+                    <span className="flex items-center gap-3">
                       <img
                         src="/Loader2.gif"
                         alt="Đang xử lý"
-                        className="w-10 h-10 rounded-full border border-purple-400 shadow-xl"
+                        className="w-8 h-8 rounded-full border border-blue-600 shadow-md"
                       />
-                      <span className="text-lg text-purple-100 animate-pulse font-medium">
+                      <span className="text-blue-300 animate-pulse font-medium text-sm">
                         Đang xác thực...
                       </span>
                     </span>
@@ -224,24 +222,21 @@ export default function VerifyInputForm() {
           </form>
 
           {error && (
-            <p className="mt-4 text-red-400 text-center animate-fadeIn">
+            <p className="mt-3 text-red-500 text-center animate-fadeIn text-sm">
               {error}
             </p>
           )}
 
           {response?.verification_result?.raw && (
-            <div className="mt-6 bg-gray-900/70 p-4 rounded-lg text-blue-200 border border-purple-500/30 animate-fadeIn">
-              <h3 className="text-purple-300 font-semibold mb-2">
+            <div className="mt-6 bg-gray-900/90 p-4 rounded-lg text-blue-300 border border-blue-700 shadow-md animate-fadeIn whitespace-pre-wrap max-h-[300px] overflow-y-auto">
+              <h3 className="text-blue-400 font-semibold mb-2 text-sm">
                 🤖 Phân tích AI:
               </h3>
               {response.verification_result.raw
                 .split(/(?=\d\. )/)
                 .map((line, idx) => (
-                  <p
-                    key={idx}
-                    className="mb-2 whitespace-pre-line leading-relaxed"
-                  >
-                    <span className="text-purple-400 font-semibold">
+                  <p key={idx} className="mb-1 leading-relaxed text-sm">
+                    <span className="text-blue-500 font-semibold">
                       {line.trim().split(":")[0]}:
                     </span>{" "}
                     {line.split(":").slice(1).join(":").trim()}
@@ -250,22 +245,43 @@ export default function VerifyInputForm() {
             </div>
           )}
         </div>
+
+        {response?.ttp_matches && response.ttp_matches.length > 0 && (
+          <div className="w-full md:w-[420px] bg-slate-800/40 p-6 rounded-lg text-white border border-blue-600 shadow-md max-h-[400px] overflow-y-auto sticky top-[20%] z-20">
+            <h3 className="text-white font-semibold mb-4 text-base">
+              ⚠️ TTP Mapping:
+            </h3>
+            <ul className="space-y-5 text-sm">
+              {response.ttp_matches.map((ttp, idx) => (
+                <li
+                  key={idx}
+                  className="border border-blue-700 rounded-md p-3 bg-blue-900/80 hover:bg-blue-400/50 transition cursor-pointer"
+                >
+                  <p>
+                    <strong>Category:</strong> {ttp.category}
+                  </p>
+                  <p>
+                    <strong>TTP:</strong> {ttp.ttp}
+                  </p>
+                  <p>
+                    <strong>Source:</strong>{" "}
+                    <a
+                      href={ttp.source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:underline"
+                    >
+                      {ttp.source}
+                    </a>
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       <style jsx global>{`
-        @keyframes fadeInUp {
-          0% {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeInUp {
-          animation: fadeInUp 0.8s ease-out forwards;
-        }
         @keyframes twinkle {
           0%,
           100% {
@@ -277,18 +293,6 @@ export default function VerifyInputForm() {
         }
         .animate-twinkle {
           animation: twinkle 3s ease-in-out infinite;
-        }
-        @keyframes glow {
-          0%,
-          100% {
-            text-shadow: 0 0 10px #a855f7;
-          }
-          50% {
-            text-shadow: 0 0 20px #7c3aed;
-          }
-        }
-        .animate-glow {
-          animation: glow 2.5s ease-in-out infinite;
         }
         @keyframes fadeIn {
           from {
