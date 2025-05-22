@@ -33,7 +33,12 @@ def search_google_api(query, max_results=5):
     if not api_key or not cse_id:
         raise ValueError("🔑 API key hoặc Search Engine ID bị thiếu trong môi trường")
 
-    search_results = google_search(query, api_key, cse_id, num=10)
+    try:
+        search_results = google_search(query, api_key, cse_id, num=10)
+    except Exception as e:
+        print(f"❌ Lỗi gọi Google Custom Search API: {e}")
+        # Trả về DataFrame rỗng hoặc có thể trả về lỗi dạng dict hoặc None tùy ý bạn
+        return pd.DataFrame()
 
     results = []
     with ThreadPoolExecutor(max_workers=5) as executor:
@@ -60,3 +65,9 @@ def search_google_api(query, max_results=5):
     news_df = pd.DataFrame(results)
     return news_df
 
+if __name__ == "__main__":
+    api_key = os.getenv("API_GOOGLE_CREDENTIAL")
+    cse_id = os.getenv("SEARCH_ENGINE_CSE_ID")
+
+    print(api_key)
+    print(cse_id)
