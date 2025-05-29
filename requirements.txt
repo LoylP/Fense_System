@@ -23,3 +23,6 @@ crewai_tools
 python-dotenv 
 tldextract
 python-whois
+matplotlib
+seaborn
+openpyxl

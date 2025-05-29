@@ -5,9 +5,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 SUSPICIOUS_COUNTRIES = {"Cambodia", "Nigeria", "Pakistan", "Afghanistan", "North Korea"}
+VT_API_KEY = os.getenv("VT_API_KEY")
+ABSTRACT_EMAIL_API = os.getenv("ABSTRACT_EMAIL_API")
+ABSTRACT_PHONE_API = os.getenv("ABSTRACT_PHONE_API")
 
 def check_url_virustotal(url):
-    api_key = os.getenv("VT_API_KEY")
+    api_key = VT_API_KEY
     url_id = base64.urlsafe_b64encode(url.encode()).decode().strip("=")
     vt_url = f"https://www.virustotal.com/api/v3/urls/{url_id}"
 
@@ -53,9 +56,9 @@ def parse_vt_result_for_display(vt_json):
         return {
             "error": f"Không thể phân tích dữ liệu VirusTotal: {e}"
         }
-    
+
 def check_email_validity(email):
-    api_key = os.getenv("ABSTRACT_EMAIL_API")
+    api_key = ABSTRACT_EMAIL_API
     url = "https://emailvalidation.abstractapi.com/v1/"
     params = {
         "api_key": api_key,
@@ -63,7 +66,7 @@ def check_email_validity(email):
     }
     response = requests.get(url, params=params)
     return response.json()
-    
+
 def parse_email_result(result):
     try:
         email = result.get("email", "N/A")
@@ -119,7 +122,7 @@ def normalize_phone_vn(phone: str) -> str:
     return phone
 
 def check_phone_validity(phone):
-    api_key = os.getenv("ABSTRACT_PHONE_API")
+    api_key = ABSTRACT_PHONE_API
     if not api_key:
         raise ValueError("❌ ABSTRACT_PHONE_API chưa được thiết lập trong .env")
 
@@ -173,6 +176,26 @@ def parse_phone_result(result):
         return {
             "error": f"Lỗi phân tích dữ liệu số điện thoại: {e}"
         }
+
+def build_checks_summary(url=None, email=None, phone=None):
+    parts = []
+
+    if url:
+        url_result = check_url_virustotal(url)
+        check_url = parse_vt_result_for_display(url_result)
+        parts.append(f"Kết quả kiểm tra URL: {check_url}")
+
+    if email:
+        mail_result = check_email_validity(email)
+        check_mail = parse_email_result(mail_result)
+        parts.append(f"Kết quả kiểm tra Mail: {check_mail}")
+
+    if phone:
+        phone_result = check_phone_validity(phone)
+        check_phone = parse_phone_result(phone_result)
+        parts.append(f"Kết quả kiểm tra Phone: {check_phone}")
+
+    return parts
 
 
 # if __name__ == "__main__":
