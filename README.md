@@ -100,8 +100,8 @@ We evaluated both **zero-shot** and **fine-tuned** variants of popular open LLMs
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourname/fraudintel.git
-cd fraudintel
+git clone https://github.com/LoylP/Fraudintel.git
+cd Fraudintel
 ```
 
 ### 2. Setup .env file
