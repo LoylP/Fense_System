@@ -13,7 +13,7 @@ import pandas as pd
 import numpy as np
 
 # Database và crawl functions
-from Database.utils import init_database, get_news_table, save_news_table, delete_NewsID, get_history, save_history_table, get_ttp_table, save_ttp_table, generate_ttp_embeddings, map_ttp_from_text
+from Database.utils import init_database, get_news_table, save_news_table, delete_NewsID, get_history, save_history_table, get_ttp_table, save_ttp_table, generate_ttp_embeddings, map_ttp_from_text, update_history
 from Database.search_engine import search_bm25, rerank_with_tfidf
 from CrawlNews.crawl_vnexpress import crawl_vnexpress
 from CrawlNews.crawl_congan import crawl_congan
@@ -107,6 +107,10 @@ class TTPs(BaseModel):
 
 class SourceNews(BaseModel):
     list_source: List[str]
+
+class RatingRequest(BaseModel):
+    id: str = ""
+    user_rating: str = ""
 
 # ===================== ROUTES =====================
 
@@ -225,8 +229,10 @@ async def verify_input(
     if input_image:
         request_str += f" [IMAGE: {input_image.filename}]"
 
-    # Tạo ID và thời gian
-    id = random.randint(0, 99999)
+    # Tạo ID mới theo định dạng "CAxxxxx"
+    id = f"CA{''.join([str(random.randint(0, 9)) for _ in range(5)])}"
+
+    # Lấy thời gian hiện tại theo múi giờ Việt Nam
     vietnam_tz = pytz.timezone('Asia/Ho_Chi_Minh')
     date = datetime.now(vietnam_tz).strftime('%Y-%m-%d %H:%M:%S')
 
@@ -236,7 +242,7 @@ async def verify_input(
 
     print('tìm thấy ttp_matches')
 
-    #Lưu lịch sử
+    # Lưu lịch sử
     save_history_table(
         id=id,
         request=request_str,
@@ -246,6 +252,7 @@ async def verify_input(
     
     return {
         "message": "Phân tích và xác minh hoàn tất!",
+        "id_request": id,
         "input_text": input_text,
         "input_image": input_image.filename if input_image else None,
         "verification_result": result,
@@ -307,6 +314,14 @@ async def show_history():
         "data": history_df.to_dict(orient="records")
     }
 
+@app.post("/rate_response", tags=["Database"])
+async def rate_response(rating: RatingRequest):
+    try:
+        update_history(rating.id, rating.user_rating)
+        return {"message": f"Rating for response {rating.id} updated successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error updating rating: {str(e)}")
+    
 # ========== MAIN ==========
 if __name__ == "__main__":
     import uvicorn

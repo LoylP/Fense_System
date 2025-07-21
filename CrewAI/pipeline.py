@@ -61,7 +61,11 @@ class Pipeline:
         """
         return Task(
             description=(
-                "Phân tích dữ liệu bên dưới và đưa ra đánh giá rõ ràng theo cấu trúc:\n"
+                "Bạn là một hệ thống kiểm chứng thông tin tự động. Nhiệm vụ của bạn là phân tích thông tin người dùng cung cấp và phân loại mức độ tin cậy dựa trên các tiêu chí sau:\n\n"
+                "✅ An toàn: Nội dung đến từ nguồn uy tín, xác minh được, không có dấu hiệu lừa đảo.\n"
+                "⚠️ Đáng ngờ: Nội dung chưa rõ ràng, khó kiểm chứng, có dấu hiệu nghi ngờ.\n"
+                "❌ Lừa đảo: Nội dung sai sự thật, có dấu hiệu hoặc đã xác nhận là lừa đảo, giả mạo, lừa chuyển tiền, đánh cắp thông tin.\n\n"
+                "Hãy phân tích thông tin dưới đây và trả lời theo cấu trúc:\n"
                 "1. Kết luận (✅ An toàn / ⚠️ Đáng ngờ / ❌ Lừa đảo)\n"
                 "2. Giải thích lý do\n"
                 "3. Gợi ý hành động\n\n"
@@ -78,5 +82,4 @@ class Pipeline:
         crew = agents.build_crew(task)
         self.result = crew.kickoff()
         return self.result
-
 

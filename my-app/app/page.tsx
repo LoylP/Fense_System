@@ -19,6 +19,7 @@ interface TtpMatch {
 }
 
 interface VerifyResponse {
+  id_request: string;
   input_text: string;
   input_image: string | null;
   message: string;
@@ -33,6 +34,8 @@ export default function VerifyInputForm() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [response, setResponse] = useState<VerifyResponse | null>(null);
+  const [userFeedback, setUserFeedback] = useState<string>("");
+  const [feedbackSent, setFeedbackSent] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [stars, setStars] = useState<Star[]>([]);
@@ -108,6 +111,30 @@ export default function VerifyInputForm() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const sendFeedback = async () => {
+    if (!response?.id_request || !userFeedback) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/rate_response`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: response.id_request,
+          user_rating: userFeedback,
+        }),
+      });
+
+      if (res.ok) {
+        setFeedbackSent(true);
+      } else {
+        throw new Error("Feedback submission failed");
+      }
+    } catch (error) {
+      console.error("Error sending feedback:", error);
+    }
+  };
+
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -142,9 +169,10 @@ export default function VerifyInputForm() {
       ))}
 
       <div className="min-h-screen flex justify-center items-start gap-8 px-4 relative z-10 py-12 flex-wrap md:flex-nowrap">
+        {/* Khối bên trái: Form + Kết quả + Góp ý */}
         <div className="flex-1 max-w-2xl bg-black/80 backdrop-blur-md rounded-2xl p-8 border border-blue-600/60 shadow-md relative z-20">
           <h1 className="text-3xl text-center font-bold text-white mb-6 tracking-wide">
-            FENSE - Hệ thống xác thực thông tin
+            FRAUDINTEL - Hệ thống xác thực
           </h1>
           <p className="text-center text-blue-400 mb-4 text-base">
             Nhập văn bản hoặc hình ảnh cần kiểm chứng vào bên dưới để hệ thống
@@ -244,8 +272,38 @@ export default function VerifyInputForm() {
                 ))}
             </div>
           )}
+
+          {response && (
+            <div className="mt-6 bg-slate-800/50 p-4 rounded-xl border border-blue-700 shadow-md animate-fadeIn">
+              <h3 className="text-blue-300 font-semibold mb-2 text-sm">
+                💬 Góp ý về kết quả:
+              </h3>
+              {!feedbackSent ? (
+                <>
+                  <textarea
+                    value={userFeedback}
+                    onChange={(e) => setUserFeedback(e.target.value)}
+                    placeholder="Nhập góp ý của bạn..."
+                    className="w-full p-3 rounded-lg bg-gray-900 border border-blue-600 text-white placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows={3}
+                  />
+                  <button
+                    onClick={sendFeedback}
+                    className="mt-3 px-4 py-2 bg-blue-700 hover:bg-blue-600 text-white rounded-lg shadow transition"
+                  >
+                    Gửi góp ý
+                  </button>
+                </>
+              ) : (
+                <p className="mt-4 text-green-400 text-center animate-fadeIn">
+                  ✅ Cảm ơn bạn đã gửi góp ý!
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
+        {/* TTP Mapping bên phải */}
         {response?.ttp_matches && response.ttp_matches.length > 0 && (
           <div className="w-full md:w-[420px] bg-slate-800/40 p-6 rounded-lg text-white border border-blue-600 shadow-md max-h-[400px] overflow-y-auto sticky top-[20%] z-20">
             <h3 className="text-white font-semibold mb-4 text-base">

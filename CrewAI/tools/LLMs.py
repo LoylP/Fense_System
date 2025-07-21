@@ -2,6 +2,7 @@ import os
 import base64
 import json
 import ast
+import re
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -9,9 +10,30 @@ from openai import OpenAI
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def encode_image_to_base64(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
+def extract_contact_info(text: str):
+    email_pattern = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
+    url_pattern = r"https?://[^\s]+|www\.[^\s]+"
+    phone_pattern = r"(\+?84|0)?\s?(\d{9,10})"
+
+    email = ''
+    phone = ''
+    url = ''
+
+    email_match = re.search(email_pattern, text)
+    if email_match:
+        email = email_match.group(0)
+    
+    # Tìm URL đầu tiên
+    url_match = re.search(url_pattern, text)
+    if url_match:
+        url = url_match.group(0)
+    
+    # Tìm số điện thoại đầu tiên
+    phone_match = re.search(phone_pattern, text)
+    if phone_match:
+        phone = "".join([g if g is not None else "" for g in phone_match.groups()]) if phone_match else ""
+
+    return email, phone, url
 
 def describe_request(text_input='Xác thực thông tin sau:', image_path=None):
     """
@@ -66,23 +88,19 @@ def describe_request(text_input='Xác thực thông tin sau:', image_path=None):
         else:
             response = client.chat.completions.create(
                 model="gpt-4o",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": (
-                            "Bạn là trợ lý AI (Phản hồi đúng ngôn ngữ người dùng hỏi). "
-                            "Hãy tóm tắt và làm rõ yêu cầu của người dùng, trích xuất từ khóa quan trọng (keywords), "
-                            "và nếu có xuất hiện trong nội dung, hãy trích xuất thêm: "
-                            "`emails`, `phones`, `urls`.\n\n"
-                            "Trả về định dạng JSON như:\n"
-                            "{'summary': ..., 'keywords': [...], 'request_user': ..., 'emails': [...], 'phones': [...], 'urls': [...]}."
-                        )
-                    },
-                    {
-                        "role": "user",
-                        "content": text_input
-                    }
-                ],
+                messages=[{
+                    "role": "system",
+                    "content": (
+                        "Bạn là trợ lý AI (Phản hồi đúng ngôn ngữ người dùng hỏi). "
+                        "Hãy tóm tắt và làm rõ yêu cầu của người dùng ngắn gọn dễ hiểu. "
+                        "Trả về định dạng JSON như:\n"
+                        "{'summary': ..., 'keywords': [...], 'request_user': ..., 'emails': [...], 'phones': [...], 'urls': [...]}."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": text_input
+                }],
                 max_tokens=700
             )
         return response.choices[0].message.content
@@ -95,13 +113,15 @@ def describe_request(text_input='Xác thực thông tin sau:', image_path=None):
             data = ast.literal_eval(content_str)
 
             if isinstance(data, dict) and data.get("summary"):
+                # Trích xuất thông tin liên quan đến email, phone, và URL
+                email, phone, url = extract_contact_info(text_input)
                 return {
                     "summary": data.get("summary"),
                     "request": data.get("request_user") or text_input,
                     "keyword": data.get("keywords", []),
-                    "phones": data.get("phones", []),
-                    "emails": data.get("emails", []),
-                    "urls": data.get("urls", [])
+                    "phones": [phone] if phone else [],
+                    "emails": [email] if email else [],
+                    "urls": [url] if url else []
                 }
         except Exception as e:
             continue  # thử lại lần sau

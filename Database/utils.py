@@ -22,7 +22,7 @@ def init_database():
     ttp_df = pd.DataFrame(columns=["pattern", "category", "ttp", "source"]) 
     ttp_df.to_sql('ttp_table', con=engine, if_exists='replace', index=False)
 
-    history_df = pd.DataFrame(columns=["id", "request", "response", "timestamp"])
+    history_df = pd.DataFrame(columns=["id", "request", "response", "timestamp", "user_rating"])
     history_df.to_sql('history_table', con=engine, if_exists='replace', index=False)
 
 def get_news_table():
@@ -80,14 +80,26 @@ def save_ttp_table(pattern, category, ttp, source):
     with engine.begin() as conn:
         ttp_df.to_sql('ttp_table', con=conn, if_exists='append', index=False)
 
-def save_history_table(id, request, response, date):
+def save_history_table(id, request, response, date, user_rating=''):
     history_df = pd.DataFrame([{
         "id": id,
         "request": request,
         "response": response,
         "timestamp": date,
+        "user_rating": user_rating
     }])
     history_df.to_sql('history_table', con=engine, if_exists='append', index=False)
+
+def update_history(id, user_rating):
+    history_df = pd.read_sql_table('history_table', engine)
+    
+    if id not in history_df["id"].values:
+        return {"error": "Record with ID not found"}
+
+    history_df.loc[history_df["id"] == id, "user_rating"] = user_rating
+    history_df.to_sql('history_table', con=engine, if_exists='replace', index=False)
+
+    return {"message": f"User rating for ID {id} updated to {user_rating}"}
 
 def get_history():
     return pd.read_sql_table('history_table', engine)

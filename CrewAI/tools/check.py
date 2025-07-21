@@ -3,6 +3,7 @@ import base64
 import requests
 from dotenv import load_dotenv
 
+# Load các API keys từ file .env
 load_dotenv()
 SUSPICIOUS_COUNTRIES = {"Cambodia", "Nigeria", "Pakistan", "Afghanistan", "North Korea"}
 VT_API_KEY = os.getenv("VT_API_KEY")
@@ -133,11 +134,13 @@ def check_phone_validity(phone):
         "phone": normalized_phone
     }
 
-    response = requests.get(url, params=params)
-    if response.status_code != 200:
-        raise Exception(f"Lỗi API: {response.status_code} – {response.text}")
-
-    return response.json()
+    try:
+        response = requests.get(url, params=params)
+        if response.status_code != 200:
+            raise Exception(f"Lỗi API: {response.status_code} – {response.text}")
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        return {"error": f"Không thể kiểm tra số điện thoại: {e}"}
 
 # Hàm phân tích kết quả trả về
 def parse_phone_result(result):
@@ -199,15 +202,7 @@ def build_checks_summary(url=None, email=None, phone=None):
 
 
 # if __name__ == "__main__":
-    # Bạn có thể thay bằng bất kỳ số nào
-    # test_number = "0762509156"  # Việt Nam
-    # test_number = "+85512345678"  # Campuchia
-
-    # result = check_url_virustotal("https://www.malware-traffic-analysis.net/")
-    # print(parse_vt_result_for_display(result))  
-
-    # result = check_email_validity("nhphuc183@gmail.com")
-    # print(parse_email_result(result))
-
-    # result = check_phone_validity("85512345678")
-    # print(result)
+#     test_number_1 = "0762509156"  
+#     test_number_2 = "+85512345678"  
+#     result = build_checks_summary("https://www.malware-traffic-analysis.net/", "nhphuc183@gmail.com", test_number_2)  # test Phone
+#     print(result)

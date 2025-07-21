@@ -10,6 +10,7 @@ interface HistoryItem {
   request: string;
   response: string;
   timestamp: string;
+  user_rating: string;
 }
 
 export default function HistoryPage() {
@@ -119,6 +120,9 @@ export default function HistoryPage() {
                     Response
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                    Feedback
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
                     Thời gian
                   </th>
                 </tr>
@@ -142,6 +146,11 @@ export default function HistoryPage() {
                       <td className="px-4 py-4 max-w-2xl">
                         <div className="max-h-40 overflow-y-auto whitespace-pre-line border p-2 rounded bg-gray-50">
                           {item.response}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 max-w-2xl">
+                        <div className="max-h-40 overflow-y-auto whitespace-pre-line border p-2 rounded bg-gray-50">
+                          {item.user_rating}
                         </div>
                       </td>
                       <td className="px-4 py-4 text-gray-600">
